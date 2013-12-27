@@ -1,0 +1,492 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		381943DE186E2490002EDE8C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943DD186E2490002EDE8C /* Foundation.framework */; };
+		381943E0186E2490002EDE8C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943DF186E2490002EDE8C /* CoreGraphics.framework */; };
+		381943E2186E2490002EDE8C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943E1186E2490002EDE8C /* UIKit.framework */; };
+		381943E4186E2490002EDE8C /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943E3186E2490002EDE8C /* SpriteKit.framework */; };
+		381943EA186E2490002EDE8C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 381943E8186E2490002EDE8C /* InfoPlist.strings */; };
+		381943EC186E2490002EDE8C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 381943EB186E2490002EDE8C /* main.m */; };
+		381943F0186E2490002EDE8C /* TTGAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 381943EF186E2490002EDE8C /* TTGAppDelegate.m */; };
+		381943F3186E2490002EDE8C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 381943F1186E2490002EDE8C /* Main.storyboard */; };
+		381943F6186E2490002EDE8C /* TTGViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 381943F5186E2490002EDE8C /* TTGViewController.m */; };
+		381943F9186E2490002EDE8C /* TTGMyScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 381943F8186E2490002EDE8C /* TTGMyScene.m */; };
+		381943FB186E2490002EDE8C /* Spaceship.png in Resources */ = {isa = PBXBuildFile; fileRef = 381943FA186E2490002EDE8C /* Spaceship.png */; };
+		381943FD186E2490002EDE8C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 381943FC186E2490002EDE8C /* Images.xcassets */; };
+		38194404186E2490002EDE8C /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38194403186E2490002EDE8C /* XCTest.framework */; };
+		38194405186E2490002EDE8C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943DD186E2490002EDE8C /* Foundation.framework */; };
+		38194406186E2490002EDE8C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943E1186E2490002EDE8C /* UIKit.framework */; };
+		3819440E186E2490002EDE8C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3819440C186E2490002EDE8C /* InfoPlist.strings */; };
+		38194410186E2490002EDE8C /* ShootTheRabitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3819440F186E2490002EDE8C /* ShootTheRabitTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		38194407186E2490002EDE8C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 381943D2186E2490002EDE8C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 381943D9186E2490002EDE8C;
+			remoteInfo = ShootTheRabit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		381943DA186E2490002EDE8C /* ShootTheRabit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShootTheRabit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		381943DD186E2490002EDE8C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		381943DF186E2490002EDE8C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		381943E1186E2490002EDE8C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		381943E3186E2490002EDE8C /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		381943E7186E2490002EDE8C /* ShootTheRabit-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ShootTheRabit-Info.plist"; sourceTree = "<group>"; };
+		381943E9186E2490002EDE8C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		381943EB186E2490002EDE8C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		381943ED186E2490002EDE8C /* ShootTheRabit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ShootTheRabit-Prefix.pch"; sourceTree = "<group>"; };
+		381943EE186E2490002EDE8C /* TTGAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTGAppDelegate.h; sourceTree = "<group>"; };
+		381943EF186E2490002EDE8C /* TTGAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTGAppDelegate.m; sourceTree = "<group>"; };
+		381943F2186E2490002EDE8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		381943F4186E2490002EDE8C /* TTGViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTGViewController.h; sourceTree = "<group>"; };
+		381943F5186E2490002EDE8C /* TTGViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTGViewController.m; sourceTree = "<group>"; };
+		381943F7186E2490002EDE8C /* TTGMyScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTGMyScene.h; sourceTree = "<group>"; };
+		381943F8186E2490002EDE8C /* TTGMyScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTGMyScene.m; sourceTree = "<group>"; };
+		381943FA186E2490002EDE8C /* Spaceship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Spaceship.png; sourceTree = "<group>"; };
+		381943FC186E2490002EDE8C /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		38194402186E2490002EDE8C /* ShootTheRabitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShootTheRabitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		38194403186E2490002EDE8C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		3819440B186E2490002EDE8C /* ShootTheRabitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ShootTheRabitTests-Info.plist"; sourceTree = "<group>"; };
+		3819440D186E2490002EDE8C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3819440F186E2490002EDE8C /* ShootTheRabitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShootTheRabitTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		381943D7186E2490002EDE8C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				381943E0186E2490002EDE8C /* CoreGraphics.framework in Frameworks */,
+				381943E2186E2490002EDE8C /* UIKit.framework in Frameworks */,
+				381943E4186E2490002EDE8C /* SpriteKit.framework in Frameworks */,
+				381943DE186E2490002EDE8C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		381943FF186E2490002EDE8C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38194404186E2490002EDE8C /* XCTest.framework in Frameworks */,
+				38194406186E2490002EDE8C /* UIKit.framework in Frameworks */,
+				38194405186E2490002EDE8C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		381943D1186E2490002EDE8C = {
+			isa = PBXGroup;
+			children = (
+				381943E5186E2490002EDE8C /* ShootTheRabit */,
+				38194409186E2490002EDE8C /* ShootTheRabitTests */,
+				381943DC186E2490002EDE8C /* Frameworks */,
+				381943DB186E2490002EDE8C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		381943DB186E2490002EDE8C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				381943DA186E2490002EDE8C /* ShootTheRabit.app */,
+				38194402186E2490002EDE8C /* ShootTheRabitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		381943DC186E2490002EDE8C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				381943DD186E2490002EDE8C /* Foundation.framework */,
+				381943DF186E2490002EDE8C /* CoreGraphics.framework */,
+				381943E1186E2490002EDE8C /* UIKit.framework */,
+				381943E3186E2490002EDE8C /* SpriteKit.framework */,
+				38194403186E2490002EDE8C /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		381943E5186E2490002EDE8C /* ShootTheRabit */ = {
+			isa = PBXGroup;
+			children = (
+				381943EE186E2490002EDE8C /* TTGAppDelegate.h */,
+				381943EF186E2490002EDE8C /* TTGAppDelegate.m */,
+				381943F1186E2490002EDE8C /* Main.storyboard */,
+				381943F4186E2490002EDE8C /* TTGViewController.h */,
+				381943F5186E2490002EDE8C /* TTGViewController.m */,
+				381943F7186E2490002EDE8C /* TTGMyScene.h */,
+				381943F8186E2490002EDE8C /* TTGMyScene.m */,
+				381943FA186E2490002EDE8C /* Spaceship.png */,
+				381943FC186E2490002EDE8C /* Images.xcassets */,
+				381943E6186E2490002EDE8C /* Supporting Files */,
+			);
+			path = ShootTheRabit;
+			sourceTree = "<group>";
+		};
+		381943E6186E2490002EDE8C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				381943E7186E2490002EDE8C /* ShootTheRabit-Info.plist */,
+				381943E8186E2490002EDE8C /* InfoPlist.strings */,
+				381943EB186E2490002EDE8C /* main.m */,
+				381943ED186E2490002EDE8C /* ShootTheRabit-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		38194409186E2490002EDE8C /* ShootTheRabitTests */ = {
+			isa = PBXGroup;
+			children = (
+				3819440F186E2490002EDE8C /* ShootTheRabitTests.m */,
+				3819440A186E2490002EDE8C /* Supporting Files */,
+			);
+			path = ShootTheRabitTests;
+			sourceTree = "<group>";
+		};
+		3819440A186E2490002EDE8C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				3819440B186E2490002EDE8C /* ShootTheRabitTests-Info.plist */,
+				3819440C186E2490002EDE8C /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		381943D9186E2490002EDE8C /* ShootTheRabit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 38194413186E2490002EDE8C /* Build configuration list for PBXNativeTarget "ShootTheRabit" */;
+			buildPhases = (
+				381943D6186E2490002EDE8C /* Sources */,
+				381943D7186E2490002EDE8C /* Frameworks */,
+				381943D8186E2490002EDE8C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShootTheRabit;
+			productName = ShootTheRabit;
+			productReference = 381943DA186E2490002EDE8C /* ShootTheRabit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		38194401186E2490002EDE8C /* ShootTheRabitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 38194416186E2490002EDE8C /* Build configuration list for PBXNativeTarget "ShootTheRabitTests" */;
+			buildPhases = (
+				381943FE186E2490002EDE8C /* Sources */,
+				381943FF186E2490002EDE8C /* Frameworks */,
+				38194400186E2490002EDE8C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				38194408186E2490002EDE8C /* PBXTargetDependency */,
+			);
+			name = ShootTheRabitTests;
+			productName = ShootTheRabitTests;
+			productReference = 38194402186E2490002EDE8C /* ShootTheRabitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		381943D2186E2490002EDE8C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = TTG;
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = TangoTiger;
+				TargetAttributes = {
+					38194401186E2490002EDE8C = {
+						TestTargetID = 381943D9186E2490002EDE8C;
+					};
+				};
+			};
+			buildConfigurationList = 381943D5186E2490002EDE8C /* Build configuration list for PBXProject "ShootTheRabit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 381943D1186E2490002EDE8C;
+			productRefGroup = 381943DB186E2490002EDE8C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				381943D9186E2490002EDE8C /* ShootTheRabit */,
+				38194401186E2490002EDE8C /* ShootTheRabitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		381943D8186E2490002EDE8C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				381943EA186E2490002EDE8C /* InfoPlist.strings in Resources */,
+				381943FD186E2490002EDE8C /* Images.xcassets in Resources */,
+				381943FB186E2490002EDE8C /* Spaceship.png in Resources */,
+				381943F3186E2490002EDE8C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		38194400186E2490002EDE8C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3819440E186E2490002EDE8C /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		381943D6186E2490002EDE8C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				381943F6186E2490002EDE8C /* TTGViewController.m in Sources */,
+				381943F0186E2490002EDE8C /* TTGAppDelegate.m in Sources */,
+				381943F9186E2490002EDE8C /* TTGMyScene.m in Sources */,
+				381943EC186E2490002EDE8C /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		381943FE186E2490002EDE8C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38194410186E2490002EDE8C /* ShootTheRabitTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		38194408186E2490002EDE8C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 381943D9186E2490002EDE8C /* ShootTheRabit */;
+			targetProxy = 38194407186E2490002EDE8C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		381943E8186E2490002EDE8C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				381943E9186E2490002EDE8C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		381943F1186E2490002EDE8C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				381943F2186E2490002EDE8C /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3819440C186E2490002EDE8C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3819440D186E2490002EDE8C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		38194411186E2490002EDE8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		38194412186E2490002EDE8C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		38194414186E2490002EDE8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ShootTheRabit/ShootTheRabit-Prefix.pch";
+				INFOPLIST_FILE = "ShootTheRabit/ShootTheRabit-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		38194415186E2490002EDE8C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ShootTheRabit/ShootTheRabit-Prefix.pch";
+				INFOPLIST_FILE = "ShootTheRabit/ShootTheRabit-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		38194417186E2490002EDE8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ShootTheRabit.app/ShootTheRabit";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ShootTheRabit/ShootTheRabit-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "ShootTheRabitTests/ShootTheRabitTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		38194418186E2490002EDE8C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ShootTheRabit.app/ShootTheRabit";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ShootTheRabit/ShootTheRabit-Prefix.pch";
+				INFOPLIST_FILE = "ShootTheRabitTests/ShootTheRabitTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		381943D5186E2490002EDE8C /* Build configuration list for PBXProject "ShootTheRabit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38194411186E2490002EDE8C /* Debug */,
+				38194412186E2490002EDE8C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		38194413186E2490002EDE8C /* Build configuration list for PBXNativeTarget "ShootTheRabit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38194414186E2490002EDE8C /* Debug */,
+				38194415186E2490002EDE8C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		38194416186E2490002EDE8C /* Build configuration list for PBXNativeTarget "ShootTheRabitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38194417186E2490002EDE8C /* Debug */,
+				38194418186E2490002EDE8C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 381943D2186E2490002EDE8C /* Project object */;
+}
