@@ -12,6 +12,8 @@
 #define kHeroPosName @"heroPos"
 #define kDebugOverlayNode @"debugOverlayName"
 
+const int kNumberOfHeroWalkingImages = 2;
+
 @interface TTGMyScene()
 @property (nonatomic) SKSpriteNode *hero;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
@@ -21,6 +23,8 @@
 @end
 
 @implementation TTGMyScene
+
+NSString * const kBackgroudImageName = @"grassField4096";
 
 //CGRect screenRect;
 CGFloat screenHeight;
@@ -35,14 +39,22 @@ CGFloat screenWidth;
       
         self.anchorPoint = CGPointMake(0.5, 0.5);  // set anchor to Center of scene
         
-        _world = [SKSpriteNode spriteNodeWithImageNamed:@"grassField4096"];
+        _world = [SKSpriteNode spriteNodeWithImageNamed:kBackgroudImageName];
         [self addChild:_world];
         
         _heroWalkFrames = [NSMutableArray new];
-        [_heroWalkFrames addObject: [SKTexture textureWithImageNamed:@"slice02_02"]];
-        [_heroWalkFrames addObject: [SKTexture textureWithImageNamed:@"slice03_03"]];
         
-        [self createHero];
+        SKTextureAtlas *heroAtlas = [SKTextureAtlas atlasNamed:@"hero"];
+        for (int i = 0; i < kNumberOfHeroWalkingImages; i++) {
+            NSString *textureName = [NSString stringWithFormat:@"heroWalk%02d", i + 1];  //use 'i + 1', since images start with '1'
+            SKTexture *temp = [heroAtlas textureNamed:textureName];
+            [_heroWalkFrames addObject:temp];
+        }
+
+        [SKTexture preloadTextures:_heroWalkFrames withCompletionHandler:^(void){
+            [self createHero];  //preload image, else hero "flashes white" when first starting to move
+        }];
+        
         
         [self setupHud];
     }
@@ -50,7 +62,9 @@ CGFloat screenWidth;
 }
 
 - (void) createHero {
-    _hero = [SKSpriteNode spriteNodeWithImageNamed:@"slice02_02"];
+    SKTexture *heroStand = [SKTexture textureWithImageNamed:@"heroStand"];
+    _hero = [SKSpriteNode spriteNodeWithTexture:heroStand];
+    
     _hero.position = CGPointMake(250, 150);
     _hero.name = @"hero";
     [_world addChild:_hero];    
@@ -78,9 +92,10 @@ CGFloat screenWidth;
         NSLog(@"move done!");
         [self.hero removeAllActions];
     }];
+  
     
     SKAction *moveSeq = [SKAction sequence:@[move, done]];
-    
+
     SKAction *sequence = [SKAction group:@[moveSeq,
                                            [SKAction repeatActionForever:
                                             [SKAction animateWithTextures:_heroWalkFrames
@@ -88,6 +103,7 @@ CGFloat screenWidth;
                                                                    resize:NO
                                                                   restore:YES]]
                                            ]];
+
     
     [self.hero runAction:sequence withKey:@"move"];
 }

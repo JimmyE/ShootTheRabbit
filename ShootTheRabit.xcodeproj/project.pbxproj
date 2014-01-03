@@ -29,6 +29,7 @@
 		386A11321870DAE40027CDB2 /* greenGrassBackground-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 386A11311870DAE40027CDB2 /* greenGrassBackground-2.png */; };
 		386A11341870E0AA0027CDB2 /* test-level-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 386A11331870E0AA0027CDB2 /* test-level-1.png */; };
 		38724377186F6AE600821CDD /* shooters.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38724376186F6AE600821CDD /* shooters.atlas */; };
+		38D7E872187749B900B442C2 /* hero.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38D7E871187749B900B442C2 /* hero.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		386A11311870DAE40027CDB2 /* greenGrassBackground-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "greenGrassBackground-2.png"; sourceTree = "<group>"; };
 		386A11331870E0AA0027CDB2 /* test-level-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-level-1.png"; sourceTree = "<group>"; };
 		38724376186F6AE600821CDD /* shooters.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = shooters.atlas; sourceTree = "<group>"; };
+		38D7E871187749B900B442C2 /* hero.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = hero.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +142,7 @@
 				381943F8186E2490002EDE8C /* TTGMyScene.m */,
 				381943FA186E2490002EDE8C /* Spaceship.png */,
 				381943FC186E2490002EDE8C /* Images.xcassets */,
+				38D7E8701877499F00B442C2 /* Assets */,
 				381943E6186E2490002EDE8C /* Supporting Files */,
 			);
 			path = ShootTheRabit;
@@ -177,6 +180,14 @@
 				3819440C186E2490002EDE8C /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		38D7E8701877499F00B442C2 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				38D7E871187749B900B442C2 /* hero.atlas */,
+			);
+			name = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,6 +271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				386A11321870DAE40027CDB2 /* greenGrassBackground-2.png in Resources */,
+				38D7E872187749B900B442C2 /* hero.atlas in Resources */,
 				382A5C6B187338D00010A7C7 /* grassField4096.png in Resources */,
 				38724377186F6AE600821CDD /* shooters.atlas in Resources */,
 				381943EA186E2490002EDE8C /* InfoPlist.strings in Resources */,
