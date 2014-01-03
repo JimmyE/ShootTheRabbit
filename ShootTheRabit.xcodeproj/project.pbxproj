@@ -24,6 +24,11 @@
 		38194406186E2490002EDE8C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 381943E1186E2490002EDE8C /* UIKit.framework */; };
 		3819440E186E2490002EDE8C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3819440C186E2490002EDE8C /* InfoPlist.strings */; };
 		38194410186E2490002EDE8C /* ShootTheRabitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3819440F186E2490002EDE8C /* ShootTheRabitTests.m */; };
+		3819441A186E39D1002EDE8C /* greenGrassBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 38194419186E39D1002EDE8C /* greenGrassBackground.png */; };
+		382A5C6B187338D00010A7C7 /* grassField4096.png in Resources */ = {isa = PBXBuildFile; fileRef = 382A5C6A187338D00010A7C7 /* grassField4096.png */; };
+		386A11321870DAE40027CDB2 /* greenGrassBackground-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 386A11311870DAE40027CDB2 /* greenGrassBackground-2.png */; };
+		386A11341870E0AA0027CDB2 /* test-level-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 386A11331870E0AA0027CDB2 /* test-level-1.png */; };
+		38724377186F6AE600821CDD /* shooters.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38724376186F6AE600821CDD /* shooters.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +65,11 @@
 		3819440B186E2490002EDE8C /* ShootTheRabitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ShootTheRabitTests-Info.plist"; sourceTree = "<group>"; };
 		3819440D186E2490002EDE8C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3819440F186E2490002EDE8C /* ShootTheRabitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShootTheRabitTests.m; sourceTree = "<group>"; };
+		38194419186E39D1002EDE8C /* greenGrassBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenGrassBackground.png; sourceTree = "<group>"; };
+		382A5C6A187338D00010A7C7 /* grassField4096.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grassField4096.png; sourceTree = "<group>"; };
+		386A11311870DAE40027CDB2 /* greenGrassBackground-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "greenGrassBackground-2.png"; sourceTree = "<group>"; };
+		386A11331870E0AA0027CDB2 /* test-level-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-level-1.png"; sourceTree = "<group>"; };
+		38724376186F6AE600821CDD /* shooters.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = shooters.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +148,11 @@
 		381943E6186E2490002EDE8C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				382A5C6A187338D00010A7C7 /* grassField4096.png */,
+				386A11331870E0AA0027CDB2 /* test-level-1.png */,
+				386A11311870DAE40027CDB2 /* greenGrassBackground-2.png */,
+				38724376186F6AE600821CDD /* shooters.atlas */,
+				38194419186E39D1002EDE8C /* greenGrassBackground.png */,
 				381943E7186E2490002EDE8C /* ShootTheRabit-Info.plist */,
 				381943E8186E2490002EDE8C /* InfoPlist.strings */,
 				381943EB186E2490002EDE8C /* main.m */,
@@ -212,6 +227,9 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = TangoTiger;
 				TargetAttributes = {
+					381943D9186E2490002EDE8C = {
+						DevelopmentTeam = EN3EADY2QV;
+					};
 					38194401186E2490002EDE8C = {
 						TestTargetID = 381943D9186E2490002EDE8C;
 					};
@@ -241,9 +259,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				386A11321870DAE40027CDB2 /* greenGrassBackground-2.png in Resources */,
+				382A5C6B187338D00010A7C7 /* grassField4096.png in Resources */,
+				38724377186F6AE600821CDD /* shooters.atlas in Resources */,
 				381943EA186E2490002EDE8C /* InfoPlist.strings in Resources */,
 				381943FD186E2490002EDE8C /* Images.xcassets in Resources */,
+				3819441A186E39D1002EDE8C /* greenGrassBackground.png in Resources */,
 				381943FB186E2490002EDE8C /* Spaceship.png in Resources */,
+				386A11341870E0AA0027CDB2 /* test-level-1.png in Resources */,
 				381943F3186E2490002EDE8C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,6 +416,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ShootTheRabit/ShootTheRabit-Prefix.pch";
 				INFOPLIST_FILE = "ShootTheRabit/ShootTheRabit-Info.plist";
@@ -407,6 +431,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ShootTheRabit/ShootTheRabit-Prefix.pch";
 				INFOPLIST_FILE = "ShootTheRabit/ShootTheRabit-Info.plist";
@@ -477,6 +502,7 @@
 				38194415186E2490002EDE8C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		38194416186E2490002EDE8C /* Build configuration list for PBXNativeTarget "ShootTheRabitTests" */ = {
 			isa = XCConfigurationList;
@@ -485,6 +511,7 @@
 				38194418186E2490002EDE8C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
