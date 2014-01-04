@@ -11,15 +11,22 @@
 #define kScoreHudName @"scoreHud"
 #define kHeroPosName @"heroPos"
 #define kDebugOverlayNode @"debugOverlayName"
+#define kHeroBulletNode @"heroBulletNode"
 
-const int kNumberOfHeroWalkingImages = 2;
+// copied from 'Adventure'
+#define kHeroProjectileSpeed 220.0
+#define kHeroProjectileLifetime 0.6
+#define kHeroProjectileFadeOutTime 0.5
+
+const int kNumberOfHeroWalkingImages = 3;
+const int kNumberOfHeroFiringImages = 2;
 
 @interface TTGMyScene()
 @property (nonatomic) SKSpriteNode *hero;
-@property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) SKSpriteNode *world;
-//@property (nonatomic) SKNode *camera;
-
+@property (nonatomic) SKSpriteNode *projectile;
+@property (nonatomic) NSMutableArray *heroWalkFrames;
+@property (nonatomic) NSMutableArray *heroFireFrames;
 @end
 
 @implementation TTGMyScene
@@ -43,18 +50,29 @@ CGFloat screenWidth;
         [self addChild:_world];
         
         _heroWalkFrames = [NSMutableArray new];
+        _heroFireFrames = [NSMutableArray new];
         
         SKTextureAtlas *heroAtlas = [SKTextureAtlas atlasNamed:@"hero"];
+        
+        for (int i = 0; i < kNumberOfHeroFiringImages; i++) {
+            NSString *textureName = [NSString stringWithFormat:@"heroFire%02d", i + 1];  //use 'i + 1', since images start with '1'
+            SKTexture *temp = [heroAtlas textureNamed:textureName];
+            [_heroFireFrames addObject:temp];
+        }
+
         for (int i = 0; i < kNumberOfHeroWalkingImages; i++) {
             NSString *textureName = [NSString stringWithFormat:@"heroWalk%02d", i + 1];  //use 'i + 1', since images start with '1'
             SKTexture *temp = [heroAtlas textureNamed:textureName];
             [_heroWalkFrames addObject:temp];
         }
 
+        
+        [SKTexture preloadTextures:_heroFireFrames withCompletionHandler:^(void ) {}];
         [SKTexture preloadTextures:_heroWalkFrames withCompletionHandler:^(void){
             [self createHero];  //preload image, else hero "flashes white" when first starting to move
         }];
         
+        _projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
         
         [self setupHud];
     }
@@ -71,52 +89,21 @@ CGFloat screenWidth;
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    CGPoint newLocation = [[touches anyObject] locationInNode:self.world];
-    
-    [self moveHeroToPoint:newLocation];
+//    CGPoint newLocation = [[touches anyObject] locationInNode:self.world];
+//    [self moveHeroToPoint:newLocation];
 }
 
-- (void) moveHeroToPoint:(CGPoint)targetPoint {
-
-    if ([self.hero actionForKey:@"move"]) {
-        [self.hero removeAllActions];
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    for (UITouch *aTouch in touches) {
+        if (aTouch.tapCount >= 2 ){
+            [self HeroFireGun];
+        }
+        else {
+            CGPoint newLocation = [[touches anyObject] locationInNode:self.world];
+            
+            [self moveHeroToPoint:newLocation];
+        }
     }
-    
-    double angle = atan2(targetPoint.y - _hero.position.y, targetPoint.x - _hero.position.x);
-    
-    [self.hero runAction:[SKAction rotateToAngle:angle duration:.1]];
-    
-    SKAction *move = [self moveToWithSpeed:self.hero.position to:targetPoint];
-
-    SKAction *done = [SKAction runBlock:^ {
-        NSLog(@"move done!");
-        [self.hero removeAllActions];
-    }];
-  
-    
-    SKAction *moveSeq = [SKAction sequence:@[move, done]];
-
-    SKAction *sequence = [SKAction group:@[moveSeq,
-                                           [SKAction repeatActionForever:
-                                            [SKAction animateWithTextures:_heroWalkFrames
-                                                             timePerFrame:0.1f
-                                                                   resize:NO
-                                                                  restore:YES]]
-                                           ]];
-
-    
-    [self.hero runAction:sequence withKey:@"move"];
-}
-
-- (SKAction *) moveToWithSpeed:(CGPoint)p1 to:(CGPoint)p2 {
-    CGFloat xDist = (p2.x - p1.x);
-    CGFloat yDist = (p2.y - p1.y);
-    CGFloat distance = sqrt((xDist * xDist) + (yDist * yDist));
-
-    float speed = 40;
-    NSTimeInterval duration = distance/speed;
-    SKAction *move  = [SKAction moveTo:p2 duration:duration];
-    return move;
 }
 
 -(void) setupHud {
@@ -186,14 +173,91 @@ CGFloat screenWidth;
     
     CGFloat midx = CGRectGetMidX(self.frame);
     CGFloat midy = CGRectGetMidY(self.frame);
-    NSLog(@"centerWorlPos.  midX: %.0f  midY: %.0f", midx, midy);
+//    NSLog(@"centerWorlPos.  midX: %.0f  midY: %.0f", midx, midy);
     
-//    [self.world setPosition:CGPointMake(-(position.x) + CGRectGetMidX(self.frame),
-//                                        -(position.y) + CGRectGetMidY(self.frame))];
     [self.world setPosition:CGPointMake(-(position.x) + CGRectGetMidY(self.frame),
                                         -(position.y) + CGRectGetMidX(self.frame))];
     
    // self.worldMovedForUpdate = YES;
+}
+
+#pragma mark Hero
+- (void) moveHeroToPoint:(CGPoint)targetPoint {
+    
+    if ([self.hero actionForKey:@"move"]) {
+        [self.hero removeAllActions];
+    }
+    
+    double angle = atan2(targetPoint.y - _hero.position.y, targetPoint.x - _hero.position.x);
+    
+    [self.hero runAction:[SKAction rotateToAngle:angle duration:.1]];
+    
+    SKAction *move = [self moveToWithSpeed:self.hero.position to:targetPoint];
+    
+    SKAction *done = [SKAction runBlock:^ { [self HeroStopWalking]; }];
+    
+    SKAction *moveSeq = [SKAction sequence:@[move, done]];
+    
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.heroWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    
+    [self.hero runAction:sequence withKey:@"move"];
+}
+
+- (SKAction *) moveToWithSpeed:(CGPoint)p1 to:(CGPoint)p2 {
+    CGFloat xDist = (p2.x - p1.x);
+    CGFloat yDist = (p2.y - p1.y);
+    CGFloat distance = sqrt((xDist * xDist) + (yDist * yDist));
+    
+    float speed = 40;
+    NSTimeInterval duration = distance/speed;
+    SKAction *move  = [SKAction moveTo:p2 duration:duration];
+    return move;
+}
+
+
+-(void) HeroStopWalking {
+    [self.hero removeAllActions]; // todo : only remove walking action
+}
+
+-(void) HeroFireGun {
+    
+    if ([self.world childNodeWithName:kHeroBulletNode] != Nil) {
+        NSLog(@"bullet alreay fired");
+        return;
+    }
+    
+    [self HeroStopWalking];
+
+    [self.hero runAction:   [SKAction animateWithTextures:self.heroFireFrames timePerFrame:0.1f resize:NO restore:YES] ];
+    
+    //add bullet
+    SKSpriteNode *projectile = [[self projectile] copy];
+    projectile.position = self.hero.position;
+    projectile.name = kHeroBulletNode;
+    [self.world addChild:projectile];
+
+    CGFloat rot = self.hero.zRotation;
+    [projectile runAction:[SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
+                                          y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
+                                   duration:kHeroProjectileLifetime]];
+    
+    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileFadeOutTime],
+                                               [SKAction fadeOutWithDuration:kHeroProjectileLifetime - kHeroProjectileFadeOutTime],
+                                               [SKAction removeFromParent]]]];
+    
+}
+
+
+#pragma mark IOS Events
+-(void) ShakeGesture {
+    [self HeroFireGun];
 }
 
 #pragma mark GameLoop Events
@@ -255,14 +319,7 @@ CGFloat screenWidth;
 }
 
 - (void) updateHudHeroPos {
-//    SKLabelNode* posNode = (SKLabelNode*)[self.world childNodeWithName:kHeroPosName];
     SKLabelNode* posNode = (SKLabelNode*)[self childNodeWithName:kDebugOverlayNode];
-    
-    CGPoint heroPosition = self.hero.position;
-    CGPoint worldPos = self.world.position;
-    CGFloat yCoordinate = worldPos.y + heroPosition.y;
-
-//    posNode.text = [NSString stringWithFormat:@"Hero.y: %.0f  world.y: %.0f  yCoord: %.0f  world.x: %.0f", self.hero.position.y, self.world.position.y, yCoordinate, self.world.position.x];
     posNode.text = [NSString stringWithFormat:@"Hero x: %.0f y: %.0f", self.hero.position.x, self.world.position.y];
 
 }

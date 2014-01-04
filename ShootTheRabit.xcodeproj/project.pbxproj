@@ -30,6 +30,7 @@
 		386A11341870E0AA0027CDB2 /* test-level-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 386A11331870E0AA0027CDB2 /* test-level-1.png */; };
 		38724377186F6AE600821CDD /* shooters.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38724376186F6AE600821CDD /* shooters.atlas */; };
 		38D7E872187749B900B442C2 /* hero.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38D7E871187749B900B442C2 /* hero.atlas */; };
+		38D7E87418775A1E00B442C2 /* projectile.png in Resources */ = {isa = PBXBuildFile; fileRef = 38D7E87318775A1E00B442C2 /* projectile.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		386A11331870E0AA0027CDB2 /* test-level-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-level-1.png"; sourceTree = "<group>"; };
 		38724376186F6AE600821CDD /* shooters.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = shooters.atlas; sourceTree = "<group>"; };
 		38D7E871187749B900B442C2 /* hero.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = hero.atlas; sourceTree = "<group>"; };
+		38D7E87318775A1E00B442C2 /* projectile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = projectile.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,6 +187,7 @@
 		38D7E8701877499F00B442C2 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				38D7E87318775A1E00B442C2 /* projectile.png */,
 				38D7E871187749B900B442C2 /* hero.atlas */,
 			);
 			name = Assets;
@@ -274,6 +277,7 @@
 				38D7E872187749B900B442C2 /* hero.atlas in Resources */,
 				382A5C6B187338D00010A7C7 /* grassField4096.png in Resources */,
 				38724377186F6AE600821CDD /* shooters.atlas in Resources */,
+				38D7E87418775A1E00B442C2 /* projectile.png in Resources */,
 				381943EA186E2490002EDE8C /* InfoPlist.strings in Resources */,
 				381943FD186E2490002EDE8C /* Images.xcassets in Resources */,
 				3819441A186E39D1002EDE8C /* greenGrassBackground.png in Resources */,

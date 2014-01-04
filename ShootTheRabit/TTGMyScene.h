@@ -10,4 +10,6 @@
 
 @interface TTGMyScene : SKScene
 
+-(void) ShakeGesture;
+
 @end

@@ -8,6 +8,10 @@
 
 #import "TTGViewController.h"
 #import "TTGMyScene.h"
+@interface TTGViewController()
+@property (nonatomic) TTGMyScene *mainScene;
+@end
+
 
 @implementation TTGViewController
 
@@ -40,11 +44,11 @@
     skView.showsNodeCount = YES;
         
     // Create and configure the scene.
-    SKScene * scene = [TTGMyScene sceneWithSize:skView.bounds.size];
-    scene.scaleMode = SKSceneScaleModeAspectFill;
+    _mainScene = [TTGMyScene sceneWithSize:skView.bounds.size];
+    _mainScene.scaleMode = SKSceneScaleModeAspectFill;
     
     // Present the scene.
-    [skView presentScene:scene];
+    [skView presentScene:_mainScene];
 }
 
 - (BOOL)shouldAutorotate {
@@ -68,5 +72,32 @@
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
 }
+
+/*
+-(BOOL) canBecomeFirstResponder
+{
+    return YES;
+}
+
+-(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    NSLog(@"motion begins %@", event);
+    if (motion == UIEventSubtypeMotionShake )         // shaking has began.
+    {
+        NSLog(@"Shake begins!");
+    }
+}
+
+
+-(void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    NSLog(@"motion ends");
+    if (motion == UIEventSubtypeMotionShake )
+    {
+        [self.mainScene ShakeGesture];
+    }
+}
+ */
+
 
 @end
