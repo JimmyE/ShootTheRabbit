@@ -17,6 +17,7 @@
 #define kHeroProjectileSpeed 220.0
 #define kHeroProjectileLifetime 0.6
 #define kHeroProjectileFadeOutTime 0.5
+#define kBulletFadeOutTime 4.0
 
 const int kNumberOfHeroWalkingImages = 3;
 const int kNumberOfHeroFiringImages = 2;
@@ -73,6 +74,8 @@ CGFloat screenWidth;
         }];
         
         _projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
+        _projectile.xScale = 0.5;
+        _projectile.yScale = 0.5;
         
         [self setupHud];
     }
@@ -171,10 +174,6 @@ CGFloat screenWidth;
 
 - (void)centerWorldOnPosition:(CGPoint)position {
     
-    CGFloat midx = CGRectGetMidX(self.frame);
-    CGFloat midy = CGRectGetMidY(self.frame);
-//    NSLog(@"centerWorlPos.  midX: %.0f  midY: %.0f", midx, midy);
-    
     [self.world setPosition:CGPointMake(-(position.x) + CGRectGetMidY(self.frame),
                                         -(position.y) + CGRectGetMidX(self.frame))];
     
@@ -246,12 +245,27 @@ CGFloat screenWidth;
     CGFloat rot = self.hero.zRotation;
     [projectile runAction:[SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                           y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
-                                   duration:kHeroProjectileLifetime]];
+                                   duration:kHeroProjectileLifetime]
+                        withKey:@"bulletMove"];
+    
+//    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileFadeOutTime],
+//                                               [SKAction fadeOutWithDuration:kHeroProjectileLifetime - kHeroProjectileFadeOutTime],
+//                                               [SKAction removeFromParent]]]];
     
     [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileFadeOutTime],
-                                               [SKAction fadeOutWithDuration:kHeroProjectileLifetime - kHeroProjectileFadeOutTime],
-                                               [SKAction removeFromParent]]]];
-    
+                                               [
+                                                SKAction runBlock:^(void) {
+                                                    NSString *burstPath = [[NSBundle mainBundle] pathForResource:@"SmokeParticle" ofType:@"sks"];
+                                                    SKEmitterNode *burstNode = [NSKeyedUnarchiver unarchiveObjectWithFile:burstPath];
+                                                    burstNode.position = CGPointMake(projectile.position.x, projectile.position.y);
+        
+                                                    [self.world addChild:burstNode];
+                                                    [projectile runAction:[SKAction removeFromParent]];
+                                                    [burstNode runAction:[SKAction sequence:@[
+                                                                                               [SKAction waitForDuration:kBulletFadeOutTime],
+                                                                                               [SKAction removeFromParent]]]];
+                                                }]]]];
+
 }
 
 
