@@ -12,11 +12,12 @@
 #define kHeroPosName @"heroPos"
 #define kDebugOverlayNode @"debugOverlayName"
 #define kHeroBulletNode @"heroBulletNode"
+#define kHeroWalkSpeed 60  // higher number, faster move
 
 // copied from 'Adventure'
 #define kHeroProjectileSpeed 220.0
-#define kHeroProjectileLifetime 0.6
-#define kHeroProjectileFadeOutTime 0.5
+#define kHeroProjectileLifetime 1.1
+//#define kHeroProjectileFadeOutTime 0.5
 #define kBulletFadeOutTime 4.0
 
 const int kNumberOfHeroWalkingImages = 3;
@@ -214,7 +215,7 @@ CGFloat screenWidth;
     CGFloat yDist = (p2.y - p1.y);
     CGFloat distance = sqrt((xDist * xDist) + (yDist * yDist));
     
-    float speed = 40;
+    float speed = kHeroWalkSpeed;
     NSTimeInterval duration = distance/speed;
     SKAction *move  = [SKAction moveTo:p2 duration:duration];
     return move;
@@ -232,7 +233,7 @@ CGFloat screenWidth;
         return;
     }
     
-    [self HeroStopWalking];
+//    [self HeroStopWalking];
 
     [self.hero runAction:   [SKAction animateWithTextures:self.heroFireFrames timePerFrame:0.1f resize:NO restore:YES] ];
     
@@ -243,16 +244,22 @@ CGFloat screenWidth;
     [self.world addChild:projectile];
 
     CGFloat rot = self.hero.zRotation;
+    SKAction *fireAction = [SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
+                                          y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
+                                    duration:kHeroProjectileLifetime];
+    /*
     [projectile runAction:[SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                           y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                    duration:kHeroProjectileLifetime]
                         withKey:@"bulletMove"];
+     */
     
 //    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileFadeOutTime],
 //                                               [SKAction fadeOutWithDuration:kHeroProjectileLifetime - kHeroProjectileFadeOutTime],
 //                                               [SKAction removeFromParent]]]];
     
-    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileFadeOutTime],
+//    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileLifetime],
+      [projectile runAction:[SKAction sequence:@[fireAction,
                                                [
                                                 SKAction runBlock:^(void) {
                                                     NSString *burstPath = [[NSBundle mainBundle] pathForResource:@"SmokeParticle" ofType:@"sks"];
