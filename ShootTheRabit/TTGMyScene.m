@@ -19,6 +19,8 @@
 #define kHeroProjectileLifetime 1.1
 //#define kHeroProjectileFadeOutTime 0.5
 #define kBulletFadeOutTime 4.0
+#define kRabbitRunDuration 1.5
+#define kRabbitRunSpeed 180.0  // Distance??
 
 const int kNumberOfHeroWalkingImages = 3;
 const int kNumberOfHeroFiringImages = 2;
@@ -131,7 +133,7 @@ CGFloat screenWidth;
     _rabbit = [SKSpriteNode spriteNodeWithTexture:rabbitTexture];
     
 //    _rabbit.position = CGPointMake(250, 150);
-    _rabbit.position = CGPointMake(self.hero.position.x + 200, self.hero.position.y);
+    _rabbit.position = CGPointMake(self.hero.position.x - 140, self.hero.position.y);
     _rabbit.name = @"rabbit";
     
     _rabbit.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:_rabbit.size];
@@ -142,7 +144,7 @@ CGFloat screenWidth;
     
     [self.world addChild:_rabbit];
     
-    NSLog(@"Rabbit created at x,y:  %.0f %.0f", self.rabbit.position.x, self.rabbit.position.y);
+    NSLog(@"Rabbit created at x,y:  %.0f %.0f   hero.pos: %.0f %.0f", self.rabbit.position.x, self.rabbit.position.y, self.hero.position.x, self.hero.position.y);
     
 }
 
@@ -198,11 +200,17 @@ CGFloat screenWidth;
 }
 
 - (void)projectile:(SKSpriteNode *)projectile didCollideWithRabbit:(SKSpriteNode *)monster {
+
     NSLog(@"Rabbit was hit");
     SKAction *rabbitDie = [SKAction rotateByAngle:180 duration:.6];
+    SKAction *foo = [SKAction scaleBy:.40 duration:.6];
+    SKAction *group = [SKAction group:@[rabbitDie, foo]];
+                      
     SKAction *remove = [SKAction removeFromParent];
                       
-    [self.rabbit runAction: [SKAction sequence:@[rabbitDie, remove]]];
+    [self.rabbit runAction: [SKAction sequence:@[group, remove]]];
+    [self.hero runAction:[SKAction waitForDuration:1.5]];
+    [self createRabbit];
 }
 
 
@@ -322,6 +330,58 @@ CGFloat screenWidth;
     [self.hero removeAllActions]; // todo : only remove walking action
 }
 
+- (void) RabbitStopWalking {
+    [self.rabbit removeAllActions]; // todo: only remove walking action
+}
+
+- (NSInteger) randomNumberBetweenMin:(NSInteger)min andMax:(NSInteger)max
+{
+    return min + arc4random() % (max - min);
+}
+
+- (void) runRabbitRun {
+    double angleDelta = [self randomNumberBetweenMin:-160 andMax:180];
+    NSLog(@"Run Rabbit!  angleDelta %.2f", angleDelta);
+    
+//    CGFloat angle = self.rabbit.zRotation + angleDelta;
+    
+//    CGFloat before = self.rabbit.zRotation;
+    
+//    SKAction *rotate = [SKAction rotateToAngle:angle duration:.1];
+    SKAction *rotate2 = [SKAction rotateByAngle:angleDelta duration:.2];
+//    [self.rabbit runAction:rotate2];
+//    [self.rabbit runAction:[SKAction waitForDuration:.3]];
+    
+//    NSLog(@"rabbit zRotation. Before: %.2f  after: %.2f", before, self.rabbit.zRotation);
+    
+    CGFloat rot = self.rabbit.zRotation;
+//    SKAction *move = [SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
+//                                           y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
+//                                    duration:kHeroProjectileLifetime];
+    SKAction *move = [SKAction moveByX:cosf(rot)*kRabbitRunSpeed
+                                           y:sinf(rot)*kRabbitRunSpeed
+                                    duration:kRabbitRunDuration];
+
+    
+    SKAction *pause = [SKAction waitForDuration:0.1];
+    [self.rabbit runAction:pause];
+    
+//    [self.rabbit runAction:[SKAction sequence:@[ pause, move]]];
+    SKAction *done = [SKAction runBlock:^ { [self RabbitStopWalking]; }];
+    SKAction *moveSeq = [SKAction sequence:@[ move, rotate2, done]];
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.rabbitWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    
+    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+
+}
+
 -(void) HeroFireGun {
     
     if ([self.world childNodeWithName:kHeroBulletNode] != Nil) {
@@ -364,14 +424,17 @@ CGFloat screenWidth;
                                                                                                [SKAction waitForDuration:kBulletFadeOutTime],
                                                                                                [SKAction removeFromParent]]]];
                                                 }]]]];
+    
+    
+    [self runRabbitRun];
 
 }
 
 
 #pragma mark IOS Events
--(void) ShakeGesture {
-    [self HeroFireGun];
-}
+//-(void) ShakeGesture {
+ //   [self HeroFireGun];
+//}
 
 #pragma mark GameLoop Events
 - (void)update:(NSTimeInterval)currentTime
@@ -433,7 +496,7 @@ CGFloat screenWidth;
 
 - (void) updateHudHeroPos {
     SKLabelNode* posNode = (SKLabelNode*)[self childNodeWithName:kDebugOverlayNode];
-    posNode.text = [NSString stringWithFormat:@"Hero x: %.0f y: %.0f", self.hero.position.x, self.world.position.y];
+    posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %.0f %.0f", self.hero.position.x, self.hero.position.y, self.rabbit.position.x, self.rabbit.position.y];
 
 }
 @end
