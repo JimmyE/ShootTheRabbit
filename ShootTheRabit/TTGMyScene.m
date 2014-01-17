@@ -22,18 +22,28 @@
 
 const int kNumberOfHeroWalkingImages = 3;
 const int kNumberOfHeroFiringImages = 2;
+const int kNumberOfRabbitWalkingImages = 4;
+
+static const uint32_t heroCategory     =  0x1 << 0;
+static const uint32_t projectileCategory  =  0x1 << 1;
+static const uint32_t rabbitCategory   =  0x1 << 2;
+
 
 @interface TTGMyScene()
 @property (nonatomic) SKSpriteNode *hero;
+@property (nonatomic) SKSpriteNode *rabbit; //assume, only 1 for now
 @property (nonatomic) SKSpriteNode *world;
 @property (nonatomic) SKSpriteNode *projectile;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) NSMutableArray *heroFireFrames;
+@property (nonatomic) NSMutableArray *rabbitWalkFrames;
 @end
 
 @implementation TTGMyScene
 
 NSString * const kBackgroudImageName = @"grassField4096";
+NSString * const kHeroStandImage = @"heroStand";
+NSString * const kRabbitStandImage = @"rabbit_stand";
 
 //CGRect screenRect;
 CGFloat screenHeight;
@@ -53,8 +63,10 @@ CGFloat screenWidth;
         
         _heroWalkFrames = [NSMutableArray new];
         _heroFireFrames = [NSMutableArray new];
+        _rabbitWalkFrames = [NSMutableArray new];
         
         SKTextureAtlas *heroAtlas = [SKTextureAtlas atlasNamed:@"hero"];
+        SKTextureAtlas *rabbitAtlas = [SKTextureAtlas atlasNamed:@"rabbit"];
         
         for (int i = 0; i < kNumberOfHeroFiringImages; i++) {
             NSString *textureName = [NSString stringWithFormat:@"heroFire%02d", i + 1];  //use 'i + 1', since images start with '1'
@@ -68,15 +80,29 @@ CGFloat screenWidth;
             [_heroWalkFrames addObject:temp];
         }
 
+        for (int i = 0; i < kNumberOfRabbitWalkingImages; i++) {
+            NSString *textureName = [NSString stringWithFormat:@"rabbit_walk_%01d", i + 1];  //use 'i + 1', since images start with '1'
+            SKTexture *temp = [rabbitAtlas textureNamed:textureName];
+            [_rabbitWalkFrames addObject:temp];
+        }
+
         
         [SKTexture preloadTextures:_heroFireFrames withCompletionHandler:^(void ) {}];
         [SKTexture preloadTextures:_heroWalkFrames withCompletionHandler:^(void){
             [self createHero];  //preload image, else hero "flashes white" when first starting to move
+
+            [SKTexture preloadTextures:_rabbitWalkFrames withCompletionHandler:^(void) {
+                [self createRabbit];
+            }];
         }];
+
         
         _projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
         _projectile.xScale = 0.5;
         _projectile.yScale = 0.5;
+        
+        self.physicsWorld.gravity = CGVectorMake(0, 0); // no gravity!
+        self.physicsWorld.contactDelegate = self;
         
         [self setupHud];
     }
@@ -84,12 +110,40 @@ CGFloat screenWidth;
 }
 
 - (void) createHero {
-    SKTexture *heroStand = [SKTexture textureWithImageNamed:@"heroStand"];
+    SKTexture *heroStand = [SKTexture textureWithImageNamed:kHeroStandImage];
     _hero = [SKSpriteNode spriteNodeWithTexture:heroStand];
     
     _hero.position = CGPointMake(250, 150);
     _hero.name = @"hero";
-    [_world addChild:_hero];    
+    _hero.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:_hero.size];
+    _hero.physicsBody.dynamic = YES;
+    _hero.physicsBody.categoryBitMask = heroCategory;
+    _hero.physicsBody.contactTestBitMask = 0;
+    _hero.physicsBody.collisionBitMask = rabbitCategory;
+    
+    [self.world addChild:_hero];
+
+    NSLog(@"Hero created at x,y:  %.0f %.0f", self.hero.position.x, self.hero.position.y);
+}
+
+- (void) createRabbit {
+    SKTexture *rabbitTexture = [SKTexture textureWithImageNamed:kRabbitStandImage];
+    _rabbit = [SKSpriteNode spriteNodeWithTexture:rabbitTexture];
+    
+//    _rabbit.position = CGPointMake(250, 150);
+    _rabbit.position = CGPointMake(self.hero.position.x + 200, self.hero.position.y);
+    _rabbit.name = @"rabbit";
+    
+    _rabbit.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:_rabbit.size];
+    _rabbit.physicsBody.dynamic = YES;
+    _rabbit.physicsBody.categoryBitMask = rabbitCategory;
+    _rabbit.physicsBody.contactTestBitMask = projectileCategory;
+    _rabbit.physicsBody.collisionBitMask = heroCategory;
+    
+    [self.world addChild:_rabbit];
+    
+    NSLog(@"Rabbit created at x,y:  %.0f %.0f", self.rabbit.position.x, self.rabbit.position.y);
+    
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -109,6 +163,48 @@ CGFloat screenWidth;
         }
     }
 }
+
+- (void)didBeginContact:(SKPhysicsContact *)contact
+{
+    SKPhysicsBody *firstBody, *secondBody;
+    
+    if (contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask)
+    {
+        firstBody = contact.bodyA;
+        secondBody = contact.bodyB;
+    }
+    else
+    {
+        firstBody = contact.bodyB;
+        secondBody = contact.bodyA;
+    }
+    
+    if ((firstBody.categoryBitMask & projectileCategory) != 0 &&
+        (secondBody.categoryBitMask & rabbitCategory) != 0)
+    {
+        [self projectile:(SKSpriteNode *) firstBody.node didCollideWithRabbit:(SKSpriteNode *) secondBody.node];
+    }
+    
+ /*   int bb1 = firstBody.categoryBitMask & rabbitCategory;
+    int bb2 = firstBody.categoryBitMask & projectileCategory;
+    int bb3 = firstBody.categoryBitMask & heroCategory;
+    
+    int abb1 = secondBody.categoryBitMask & rabbitCategory;
+    int abb2 = secondBody.categoryBitMask & projectileCategory;
+    int abb3 = secondBody.categoryBitMask & heroCategory;
+    
+    NSLog(@"%d %d %d %d %d %d", bb1, bb2, bb3, abb1, abb2, abb3);
+   */
+}
+
+- (void)projectile:(SKSpriteNode *)projectile didCollideWithRabbit:(SKSpriteNode *)monster {
+    NSLog(@"Rabbit was hit");
+    SKAction *rabbitDie = [SKAction rotateByAngle:180 duration:.6];
+    SKAction *remove = [SKAction removeFromParent];
+                      
+    [self.rabbit runAction: [SKAction sequence:@[rabbitDie, remove]]];
+}
+
 
 -(void) setupHud {
     CGFloat hudX = 0;
@@ -241,25 +337,21 @@ CGFloat screenWidth;
     SKSpriteNode *projectile = [[self projectile] copy];
     projectile.position = self.hero.position;
     projectile.name = kHeroBulletNode;
+    projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+    projectile.physicsBody.dynamic = YES;
+    projectile.physicsBody.categoryBitMask = projectileCategory;
+    projectile.physicsBody.contactTestBitMask = rabbitCategory;
+    projectile.physicsBody.collisionBitMask = 0;
+    projectile.physicsBody.usesPreciseCollisionDetection = YES;
+    
     [self.world addChild:projectile];
 
     CGFloat rot = self.hero.zRotation;
     SKAction *fireAction = [SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                           y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                     duration:kHeroProjectileLifetime];
-    /*
-    [projectile runAction:[SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
-                                          y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
-                                   duration:kHeroProjectileLifetime]
-                        withKey:@"bulletMove"];
-     */
-    
-//    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileFadeOutTime],
-//                                               [SKAction fadeOutWithDuration:kHeroProjectileLifetime - kHeroProjectileFadeOutTime],
-//                                               [SKAction removeFromParent]]]];
-    
-//    [projectile runAction:[SKAction sequence:@[[SKAction waitForDuration:kHeroProjectileLifetime],
-      [projectile runAction:[SKAction sequence:@[fireAction,
+
+    [projectile runAction:[SKAction sequence:@[fireAction,
                                                [
                                                 SKAction runBlock:^(void) {
                                                     NSString *burstPath = [[NSBundle mainBundle] pathForResource:@"SmokeParticle" ofType:@"sks"];

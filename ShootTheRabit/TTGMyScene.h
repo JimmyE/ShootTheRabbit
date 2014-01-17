@@ -8,7 +8,7 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-@interface TTGMyScene : SKScene
+@interface TTGMyScene : SKScene <SKPhysicsContactDelegate>
 
 -(void) ShakeGesture;
 
