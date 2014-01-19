@@ -14,6 +14,7 @@
 #define kHeroBulletNode @"heroBulletNode"
 #define kPlayerPosLabel  @"playerPos"
 #define kGameStatLabel @"gameStats"
+#define kGameDebugLabel @"debugMode"
 
 #define kHeroWalkSpeed 60  // higher number, faster move
 
@@ -38,6 +39,7 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 @property (nonatomic) SKSpriteNode *hero;
 @property (nonatomic) SKSpriteNode *rabbit; //assume, only 1 for now
 @property (nonatomic) SKSpriteNode *world;
+@property (nonatomic) SKNode *gameHudNode;
 @property (nonatomic) SKSpriteNode *projectile;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) NSMutableArray *heroFireFrames;
@@ -54,6 +56,7 @@ NSString * const kRabbitStandImage = @"rabbit_stand";
 CGFloat screenHeight;
 CGFloat screenWidth;
 int rabbitKills = 0;
+bool isDebugModeOn = false;
 
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
@@ -187,9 +190,14 @@ int rabbitKills = 0;
             [self HeroFireGun];
         }
         else {
-            CGPoint newLocation = [[touches anyObject] locationInNode:self.world];
+            CGPoint touchLocation = [[touches anyObject] locationInNode:self];
+            SKNode *node = [self nodeAtPoint:touchLocation];
+            if ([node.name isEqualToString:kGameDebugLabel]) {
+                isDebugModeOn = !isDebugModeOn;
+            }
             
-            [self moveHeroToPoint:newLocation];
+            CGPoint touchLocationInWorld = [[touches anyObject] locationInNode:self.world];
+            [self moveHeroToPoint:touchLocationInWorld];
         }
     }
 }
@@ -250,55 +258,66 @@ int rabbitKills = 0;
 }
 
 
+- (SKLabelNode*) createDefaultHudLabel:(NSString *)labelName  {
+    
+    SKLabelNode *label = [SKLabelNode labelNodeWithFontNamed:@"Copperplate"];
+    label.name = labelName;
+    label.fontColor = [SKColor redColor];
+    label.fontSize = 12;
+    label.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+    label.position = CGPointMake(0, 0);
+    
+    return label;
+}
+
 -(void) setupHud {
     CGFloat hudX = ((screenWidth /2) * -1) + 20;
     CGFloat hudY = (self.frame.size.height / 2) - 20;
     
-    SKNode *hud = [[SKNode alloc] init];
-    hud.name = kDebugOverlayNode;
-    hud.position = CGPointMake(hudX, hudY);
-    //    label.position = CGPointMake(hudX + i * hudD + (avatar.size.width * 1.0), hudY + 10 );
+    _gameHudNode = [[SKNode alloc] init];
+    _gameHudNode.name = kDebugOverlayNode;
+    _gameHudNode.position = CGPointMake(hudX, hudY);
 
-    SKLabelNode *labelPosition = [SKLabelNode labelNodeWithFontNamed:@"Copperplate"];
-    labelPosition.name = kPlayerPosLabel;
+    SKLabelNode *labelPosition = [self createDefaultHudLabel:kPlayerPosLabel];
     labelPosition.text = @"starting up...";
-    labelPosition.fontColor = [SKColor redColor];
-    labelPosition.fontSize = 12;
-    labelPosition.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
     labelPosition.position = CGPointMake(0, 0);
+    [_gameHudNode addChild:labelPosition];
 
-    [hud addChild:labelPosition];
-
-    SKLabelNode *gameStats = [SKLabelNode labelNodeWithFontNamed:@"Copperplate"];
-    gameStats.name = kGameStatLabel;
+    SKLabelNode *gameStats = [self createDefaultHudLabel:kGameStatLabel];
     gameStats.text = @"stats...";
-    gameStats.fontColor = [SKColor redColor];
-    gameStats.fontSize = 12;
-    gameStats.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
-    gameStats.position = CGPointMake(400, 0);
+    gameStats.position = CGPointMake(screenWidth - 100, 0);
+    [_gameHudNode addChild:gameStats];
     
-    [hud addChild:gameStats];
-
+    SKLabelNode *debug = [self createDefaultHudLabel:kGameDebugLabel];
+    debug.text = @"debug off";
+    debug.position = CGPointMake(screenWidth/2, 0);
+    [_gameHudNode addChild:debug];
     
 //    [self.world addChild:hud]; //doens't move when player moves
-    [self addChild:hud];
+    [self addChild:_gameHudNode];
 }
 
 - (void) updateHudHeroPos {
-//    CGPoint rabbitPos = self.rabbit.position;
     NSString *rabbitInfo = [NSString stringWithFormat:@"%.0f %.0f", self.rabbit.position.x, self.rabbit.position.y];
     
     if (self.rabbit.parent == nil) {
         rabbitInfo = @" --";
     }
     
-    SKNode* hudNode = (SKNode*)[self childNodeWithName:kDebugOverlayNode];
-    SKLabelNode *posNode = (SKLabelNode*) [hudNode childNodeWithName:kPlayerPosLabel];
-    SKLabelNode *stats = (SKLabelNode*) [hudNode childNodeWithName:kGameStatLabel];
+//    SKNode* hudNode = (SKNode*)[self childNodeWithName:kDebugOverlayNode];
+    SKLabelNode *posNode = (SKLabelNode*) [self.gameHudNode childNodeWithName:kPlayerPosLabel];
+    SKLabelNode *stats = (SKLabelNode*) [self.gameHudNode childNodeWithName:kGameStatLabel];
+    SKLabelNode *debug = (SKLabelNode*) [self.gameHudNode childNodeWithName:kGameDebugLabel];
     
-//    posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %.0f %.0f", self.hero.position.x, self.hero.position.y, rabbitPos.x, rabbitPos.y];
     posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %@", self.hero.position.x, self.hero.position.y, rabbitInfo ];
     stats.text = [NSString stringWithFormat:@"Kills: %d", rabbitKills];
+    
+    if (isDebugModeOn) {
+        debug.text = @"debug ON";
+    }
+    else {
+        debug.text = @"debug off";
+    }
 }
 
 -(void)setupHudOLD {
