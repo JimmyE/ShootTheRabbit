@@ -50,6 +50,7 @@ NSString * const kRabbitStandImage = @"rabbit_stand";
 //CGRect screenRect;
 CGFloat screenHeight;
 CGFloat screenWidth;
+int rabbitKills = 0;
 
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
@@ -129,11 +130,33 @@ CGFloat screenWidth;
 }
 
 - (void) createRabbit {
+    if (self.rabbit.parent != nil ) {
+        NSLog(@"createRabbit called, but rabbit already exists on game");
+        return;
+    }
+    
     SKTexture *rabbitTexture = [SKTexture textureWithImageNamed:kRabbitStandImage];
     _rabbit = [SKSpriteNode spriteNodeWithTexture:rabbitTexture];
     
-//    _rabbit.position = CGPointMake(250, 150);
-    _rabbit.position = CGPointMake(self.hero.position.x - 140, self.hero.position.y);
+    /*
+    int startX = self.hero.position.x +[self getRandomNumberBetween:-100 to:100];
+    int startY = self.hero.position.y +[self getRandomNumberBetween:-100 to:100];
+    
+    if (self.world.size.width / 2 > startX) {
+        startX = [self getRandomNumberBetween:20 to:self.world.size.width / 2 - 20];
+    }
+
+    if (self.world.size.height /2 > startY) {
+        startY = [self getRandomNumberBetween:20 to:self.world.size.height /2 - 20];
+    }
+     */
+    
+    int startX = self.hero.position.x + 80;
+    int startY = self.hero.position.y - 80;
+    // todo: check bounds
+    
+//    _rabbit.position = CGPointMake(self.hero.position.x, self.hero.position.y);
+    _rabbit.position = CGPointMake(startX, startY);
     _rabbit.name = @"rabbit";
     
     _rabbit.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:_rabbit.size];
@@ -145,6 +168,8 @@ CGFloat screenWidth;
     [self.world addChild:_rabbit];
     
     NSLog(@"Rabbit created at x,y:  %.0f %.0f   hero.pos: %.0f %.0f", self.rabbit.position.x, self.rabbit.position.y, self.hero.position.x, self.hero.position.y);
+    
+    [self runRabbitRunAlt2];
     
 }
 
@@ -199,18 +224,26 @@ CGFloat screenWidth;
    */
 }
 
-- (void)projectile:(SKSpriteNode *)projectile didCollideWithRabbit:(SKSpriteNode *)monster {
-
-    NSLog(@"Rabbit was hit");
+- (void) killAnimal:(SKSpriteNode *) animal {
     SKAction *rabbitDie = [SKAction rotateByAngle:180 duration:.6];
     SKAction *foo = [SKAction scaleBy:.40 duration:.6];
     SKAction *group = [SKAction group:@[rabbitDie, foo]];
-                      
+    
     SKAction *remove = [SKAction removeFromParent];
-                      
-    [self.rabbit runAction: [SKAction sequence:@[group, remove]]];
-    [self.hero runAction:[SKAction waitForDuration:1.5]];
-    [self createRabbit];
+    
+    [animal removeAllActions];
+    [animal runAction: [SKAction sequence:@[group, remove]]];
+    rabbitKills++;
+}
+
+- (void)projectile:(SKSpriteNode *)projectile didCollideWithRabbit:(SKSpriteNode *)monster {
+
+    NSLog(@"Rabbit was hit");
+    [self killAnimal:monster];
+    [self.world runAction:[SKAction waitForDuration:1.5] completion:^(void) {
+        [self createRabbit];
+    }];
+    
 }
 
 
@@ -343,32 +376,195 @@ CGFloat screenWidth;
     double angleDelta = [self randomNumberBetweenMin:-160 andMax:180];
     NSLog(@"Run Rabbit!  angleDelta %.2f", angleDelta);
     
-//    CGFloat angle = self.rabbit.zRotation + angleDelta;
-    
-//    CGFloat before = self.rabbit.zRotation;
-    
-//    SKAction *rotate = [SKAction rotateToAngle:angle duration:.1];
-    SKAction *rotate2 = [SKAction rotateByAngle:angleDelta duration:.2];
-//    [self.rabbit runAction:rotate2];
-//    [self.rabbit runAction:[SKAction waitForDuration:.3]];
-    
-//    NSLog(@"rabbit zRotation. Before: %.2f  after: %.2f", before, self.rabbit.zRotation);
+    SKAction *rotate = [SKAction rotateByAngle:angleDelta duration:.2];
     
     CGFloat rot = self.rabbit.zRotation;
-//    SKAction *move = [SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
-//                                           y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
-//                                    duration:kHeroProjectileLifetime];
     SKAction *move = [SKAction moveByX:cosf(rot)*kRabbitRunSpeed
                                            y:sinf(rot)*kRabbitRunSpeed
                                     duration:kRabbitRunDuration];
 
-    
-    SKAction *pause = [SKAction waitForDuration:0.1];
-    [self.rabbit runAction:pause];
-    
-//    [self.rabbit runAction:[SKAction sequence:@[ pause, move]]];
     SKAction *done = [SKAction runBlock:^ { [self RabbitStopWalking]; }];
-    SKAction *moveSeq = [SKAction sequence:@[ move, rotate2, done]];
+    SKAction *moveSeq = [SKAction sequence:@[ move, rotate, done]];
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.rabbitWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    
+    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+}
+
+- (void) runRabbitRunAlt1 {
+    CGMutablePathRef cgpath = CGPathCreateMutable();
+    
+//    int width1 = self.rabbit.size.width;
+//    int height1 = self.rabbit.size.height;
+    
+//    int width2 = screenWidth;
+//    int height2 = screenHeight;
+    
+    int yStart = self.rabbit.position.y;
+    int yEnd = self.rabbit.position.y + [self getRandomNumberBetween:-200 to:200];
+    // TODO * Check Bounds of World
+    
+    float xStart = self.rabbit.position.x;
+    float xEnd = self.rabbit.position.x + [self getRandomNumberBetween:-150 to:350];
+    //ControlPoint1
+    float cp1X = [self getRandomNumberBetween:xStart - 50 to:xStart + 250 ];
+    float cp1Y = [self getRandomNumberBetween:yStart - 50 to:yStart + 250 ];
+    //ControlPoint2
+    float cp2X = [self getRandomNumberBetween:cp1X - 50 to:cp1X  + 150 ];
+    float cp2Y = [self getRandomNumberBetween:cp1Y - 30 to:cp1Y + 130];
+    CGPoint s = CGPointMake(xStart, yStart);
+    CGPoint e = CGPointMake(xEnd, yEnd);
+    CGPoint cp1 = CGPointMake(cp1X, cp1Y);
+    CGPoint cp2 = CGPointMake(cp2X, cp2Y);
+    CGPathMoveToPoint(cgpath,NULL, s.x, s.y);
+    
+    CGPathAddCurveToPoint(cgpath, NULL, cp1.x, cp1.y, cp2.x, cp2.y, e.x, e.y);
+    
+    SKAction *rabbitPath = [SKAction followPath:cgpath asOffset:NO orientToPath:YES duration:3];
+    
+//    [self.rabbit runAction:planePath];
+    SKAction *done = [SKAction runBlock:^ { [self RabbitStopWalking]; }];
+    SKAction *moveSeq = [SKAction sequence:@[ rabbitPath, done]];
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.rabbitWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+}
+
+- (int) calcDistanceBetween:(int)point1 and:(int)point2 {
+    if (point1 > point2) {
+        return point1 - point2;
+    }
+    
+    return point2 - point1;
+}
+
+- (void) runRabbitRunAlt2 {
+    NSLog(@"runRabbitRunAlt2");
+    CGMutablePathRef cgpath = CGPathCreateMutable();
+    
+    // TODO * Check Bounds of World
+
+    int xStart = self.rabbit.position.x;
+    int yStart = self.rabbit.position.y;
+
+    int xMove = [self getRandomNumberBetween:100 to:400];
+    int yMove = [self getRandomNumberBetween:100 to:400];
+    
+    if (abs(self.hero.position.y - self.rabbit.position.y) <= 70) {
+        //too close
+        if (self.hero.position.y > self.rabbit.position.y) {
+            NSLog(@"too close on y");
+            yMove *= -1;
+        }
+    }
+    else if (abs(self.hero.position.x - self.rabbit.position.x) <= 70) {
+        //to close
+        if (self.hero.position.x > self.rabbit.position.x) {
+            NSLog(@"too close on x");
+            xMove *= -1;
+        }
+    }
+    else
+    {
+        if (xMove %2 == 0 ){
+            xMove *= -1;
+        }
+        if (yMove %2 != 0) {
+            yMove *= -1;
+        }
+    }
+    
+//    int xEnd = self.rabbit.position.x + [self getRandomNumberBetween:-250 to:250];
+//    int yEnd = self.rabbit.position.y + [self getRandomNumberBetween:-200 to:200];
+    int xEnd = self.rabbit.position.x + xMove;
+    int yEnd = self.rabbit.position.y + yMove;
+    
+    if (xEnd < 0 ) {
+  //      xEnd = 20;
+    }
+    else if (xEnd >= screenWidth ) {
+        NSLog(@"adjust xEnd to less than screenWidth: %.0f  xEnd: %d", screenWidth, xEnd);
+        xEnd = screenWidth - 20;
+    }
+    
+    if (yEnd < 0 ){
+//        yEnd = 20;
+    }
+    else if (yEnd >= screenHeight) {
+        yEnd = screenHeight - 20;
+        NSLog(@"adjust yEnd to less than screenHeight");
+    }
+    
+    int xDistance = [self calcDistanceBetween:xStart and:xEnd];
+    int yDistance = [self calcDistanceBetween:yStart and:yEnd];
+    
+    
+    //ControlPoint1
+    int cp1X = xStart + [self getRandomNumberBetween:20 to:(xDistance/2) ];
+    int cp1Y = yStart + [self getRandomNumberBetween:20 to:(yDistance/2) ];
+    
+    //ControlPoint2
+    int cp2X = [self getRandomNumberBetween:cp1X to:xEnd];
+    int cp2Y = [self getRandomNumberBetween:cp1Y to:yEnd];
+    
+    CGPoint pointStart = CGPointMake(xStart, yStart);
+    CGPoint pointEnd = CGPointMake(xEnd, yEnd);
+    CGPoint pointCP1 = CGPointMake(cp1X, cp1Y);
+    CGPoint pointCP2 = CGPointMake(cp2X, cp2Y);
+    CGPathMoveToPoint(cgpath, NULL, pointStart.x, pointStart.y);
+    
+    NSLog(@"start: %.0fx%.0f  cp1: %.0fx%.0f cp2: %.0fx%.0f  END: %.0fx%.0f ", pointStart.x,pointStart.y, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
+    
+    CGPathAddCurveToPoint(cgpath, NULL, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
+    
+    SKAction *rabbitPath = [SKAction followPath:cgpath asOffset:NO orientToPath:YES duration:3];
+    
+    //    [self.rabbit runAction:planePath];
+    SKAction *done = [SKAction runBlock:^ { [self RabbitStopWalking]; }];
+    SKAction *moveSeq = [SKAction sequence:@[ rabbitPath, done]];
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.rabbitWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+}
+
+- (void) RabbitCharge {
+    NSLog(@"Charge the hero");
+    
+    // charge the hunter
+    // todo: refactor, pretty much a copy of moveHeroToPoint
+    CGPoint targetPoint = self.hero.position;
+    
+    double angle = atan2(targetPoint.y - self.rabbit.position.y, targetPoint.x - self.rabbit.position.x);
+    
+    [self.rabbit runAction:[SKAction rotateToAngle:angle duration:.1]];
+
+    targetPoint.x += 30;
+    targetPoint.y += 20;
+    
+    SKAction *move = [self moveToWithSpeed:self.rabbit.position to:targetPoint];
+    
+    SKAction *done = [SKAction runBlock:^ { [self RabbitStopWalking]; }];
+    
+    SKAction *moveSeq = [SKAction sequence:@[move, done]];
+    
     SKAction *sequence = [SKAction group:@[moveSeq,
                                            [SKAction repeatActionForever:
                                             [SKAction animateWithTextures:self.rabbitWalkFrames
@@ -380,6 +576,15 @@ CGFloat screenWidth;
     
     [self.rabbit runAction:sequence withKey:@"moveRabbit"];
 
+}
+
+-(int)getRandomNumberBetween:(int)from to:(int)to {
+    if (from > to) {
+        int temp = from;
+        from = to;
+        to = temp;
+    }
+    return (int)from + arc4random() % (to-from+1);
 }
 
 -(void) HeroFireGun {
@@ -426,15 +631,19 @@ CGFloat screenWidth;
                                                 }]]]];
     
     
-    [self runRabbitRun];
 
+    SKAction *pause = [SKAction waitForDuration:0.1];
+    [self.rabbit runAction:pause];  // very small pause before rabbit takes off
+//    [self runRabbitRun];
+//    [self runRabbitRunAlt1];
+    [self runRabbitRunAlt2];
 }
 
 
 #pragma mark IOS Events
-//-(void) ShakeGesture {
- //   [self HeroFireGun];
-//}
+-(void) ShakeGesture {
+   [self RabbitCharge];
+}
 
 #pragma mark GameLoop Events
 - (void)update:(NSTimeInterval)currentTime
@@ -495,8 +704,14 @@ CGFloat screenWidth;
 }
 
 - (void) updateHudHeroPos {
+    CGPoint rabbitPos = self.rabbit.position;
+    if (self.rabbit.parent == nil) {
+        rabbitPos.x = 0;
+        rabbitPos.y  = 0;
+    }
+
     SKLabelNode* posNode = (SKLabelNode*)[self childNodeWithName:kDebugOverlayNode];
-    posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %.0f %.0f", self.hero.position.x, self.hero.position.y, self.rabbit.position.x, self.rabbit.position.y];
+    posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %.0f %.0f   Kills: %d", self.hero.position.x, self.hero.position.y, rabbitPos.x, rabbitPos.y, rabbitKills];
 
 }
 @end

@@ -88,16 +88,14 @@
     }
 }
 
-
+*/
 -(void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
 {
-    NSLog(@"motion ends");
     if (motion == UIEventSubtypeMotionShake )
     {
         [self.mainScene ShakeGesture];
     }
 }
- */
 
 
 @end

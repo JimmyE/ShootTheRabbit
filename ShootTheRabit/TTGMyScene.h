@@ -10,6 +10,6 @@
 
 @interface TTGMyScene : SKScene <SKPhysicsContactDelegate>
 
-//-(void) ShakeGesture;
+-(void) ShakeGesture;
 
 @end
