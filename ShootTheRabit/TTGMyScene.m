@@ -56,7 +56,7 @@ NSString * const kRabbitStandImage = @"rabbit_stand";
 CGFloat screenHeight;
 CGFloat screenWidth;
 int rabbitKills = 0;
-bool isDebugModeOn = false;
+bool isDebugModeOn = true;
 
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
@@ -309,14 +309,15 @@ bool isDebugModeOn = false;
     SKLabelNode *stats = (SKLabelNode*) [self.gameHudNode childNodeWithName:kGameStatLabel];
     SKLabelNode *debug = (SKLabelNode*) [self.gameHudNode childNodeWithName:kGameDebugLabel];
     
-    posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %@", self.hero.position.x, self.hero.position.y, rabbitInfo ];
     stats.text = [NSString stringWithFormat:@"Kills: %d", rabbitKills];
     
     if (isDebugModeOn) {
         debug.text = @"debug ON";
+        posNode.text = [NSString stringWithFormat:@"Hero: %.0f %.0f  Rabbit: %@", self.hero.position.x, self.hero.position.y, rabbitInfo ];
     }
     else {
         debug.text = @"debug off";
+        posNode.text = @"";
     }
 }
 
@@ -583,6 +584,34 @@ bool isDebugModeOn = false;
                                                                    resize:NO
                                                                   restore:YES]]
                                            ]];
+    
+    if (isDebugModeOn ) {
+//
+        SKNode *foo = [self.world childNodeWithName:@"pathPoints"];
+        while (foo != nil ){
+            [foo removeFromParent];
+            foo = [self.world childNodeWithName:@"pathPoints"];
+        }
+        
+        SKShapeNode *pNode = [SKShapeNode new];
+//        roke and fill = 2 nodes
+        CGMutablePathRef myPath = CGPathCreateMutable();
+        CGPathAddArc(myPath, NULL, 0, 0, 4, 0, M_PI*2, YES);
+        pNode.path = myPath;
+        pNode.fillColor = [SKColor blueColor];
+        pNode.position = pointCP1;
+        pNode.name = @"pathPoints";
+        [self.world addChild:pNode];
+        
+        SKShapeNode *p2 = [pNode copy];
+        p2.position = pointCP2;
+        [self.world addChild:p2];
+
+        SKShapeNode *pS = [pNode copy];
+        pS.position = pointStart;
+        pS.fillColor = [SKColor redColor];
+        [self.world addChild:pS];
+    }
     
     [self.rabbit runAction:sequence withKey:@"moveRabbit"];
 }
