@@ -17,6 +17,7 @@
 #define kGameDebugLabel @"debugMode"
 
 #define kHeroWalkSpeed 60  // higher number, faster move
+#define kHeroWalkDistance 600.0  // higher number, farther move
 
 // copied from 'Adventure'
 #define kHeroProjectileSpeed 220.0
@@ -60,6 +61,32 @@ CGFloat screenWidth;
 int rabbitKills = 0;
 bool isDebugModeOn = true;
 
+#pragma mark Vector Math
+
+// Vector math from http://www.raywenderlich.com/42699/spritekit-tutorial-for-beginners
+static inline CGPoint rwAdd(CGPoint a, CGPoint b) {
+    return CGPointMake(a.x + b.x, a.y + b.y);
+}
+
+static inline CGPoint rwSub(CGPoint a, CGPoint b) {
+    return CGPointMake(a.x - b.x, a.y - b.y);
+}
+
+static inline CGPoint rwMult(CGPoint a, float b) {
+    return CGPointMake(a.x * b, a.y * b);
+}
+
+static inline float rwLength(CGPoint a) {
+    return sqrtf(a.x * a.x + a.y * a.y);
+}
+
+// Makes a vector have a length of 1
+static inline CGPoint rwNormalize(CGPoint a) {
+    float length = rwLength(a);
+    return CGPointMake(a.x / length, a.y / length);
+}
+
+#pragma mark initialize
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
         
@@ -201,7 +228,8 @@ bool isDebugModeOn = true;
             }
             
             CGPoint touchLocationInWorld = [[touches anyObject] locationInNode:self.world];
-            [self moveHeroToPoint:touchLocationInWorld];
+//            [self moveHeroToPoint:touchLocationInWorld];
+            [self moveHeroInDirectionOfPoint:touchLocationInWorld];
         }
     }
 }
@@ -331,6 +359,74 @@ bool isDebugModeOn = true;
 #pragma mark Hero
 - (void) moveHeroToPoint:(CGPoint)targetPoint {
     
+    // OLD WAY, see moveHeroInDirectionOfPoint
+    if ([self.hero actionForKey:@"move"]) {
+        [self.hero removeAllActions];
+    }
+    
+    targetPoint = [self adjustPointWithinWorldBounds:targetPoint];
+
+    double angle = atan2(targetPoint.y - _hero.position.y, targetPoint.x - _hero.position.x);
+    
+    [self.hero runAction:[SKAction rotateToAngle:angle duration:.1]];
+    
+    SKAction *move = [self moveToWithSpeed:self.hero.position to:targetPoint];
+    
+    SKAction *done = [SKAction runBlock:^ { [self HeroStopWalking]; }];
+    
+    SKAction *moveSeq = [SKAction sequence:@[move, done]];
+    
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.heroWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    [self.hero runAction:sequence withKey:@"move"];
+}
+
+- (void) moveHeroInDirectionOfPoint:(CGPoint) targetPoint {
+
+    if ([self.hero actionForKey:@"move"]) {
+        [self.hero removeAllActions];
+    }
+
+    double angle = atan2(targetPoint.y - _hero.position.y, targetPoint.x - _hero.position.x);
+    
+    [self.hero runAction:[SKAction rotateToAngle:angle duration:.1]];
+    
+    CGPoint offset = rwSub(self.hero.position, targetPoint);
+    offset.x *= -1;   //wtf, need '-1' to get direction correct
+    offset.y *= -1;
+    
+    CGPoint direction = rwNormalize(offset);
+    CGPoint moveAmount = rwMult(direction, kHeroWalkDistance);
+    CGPoint endPoint= rwAdd(moveAmount, self.hero.position);
+    
+    endPoint = [self adjustPointWithinWorldBounds:endPoint];
+    
+    //NSLog(@"touch: %.01f,%.01f  endP: %.01f,%.01f", targetPoint.x, targetPoint.y, endPoint.x, endPoint.y);
+    SKAction *move = [self moveToWithSpeed:self.hero.position to:endPoint];
+
+    SKAction *done = [SKAction runBlock:^ { [self HeroStopWalking]; }];
+
+    SKAction *moveSeq = [SKAction sequence:@[move, done]];
+    
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.heroWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    [self.hero runAction:sequence withKey:@"move"];
+    
+}
+
+- (CGPoint) adjustPointWithinWorldBounds:(CGPoint) targetPoint {
     const int wallSize = 10;
     const int maxX = ((self.world.size.width / 2) - wallSize - (self.hero.size.width /2));
     const int minX = maxX * -1;
@@ -351,39 +447,21 @@ bool isDebugModeOn = true;
         targetPoint.y = maxY;
     }
     
-    if ([self.hero actionForKey:@"move"]) {
-        [self.hero removeAllActions];
-    }
-    
-    double angle = atan2(targetPoint.y - _hero.position.y, targetPoint.x - _hero.position.x);
-    
-    [self.hero runAction:[SKAction rotateToAngle:angle duration:.1]];
-    
-    SKAction *move = [self moveToWithSpeed:self.hero.position to:targetPoint];
-    
-    SKAction *done = [SKAction runBlock:^ { [self HeroStopWalking]; }];
-    
-    SKAction *moveSeq = [SKAction sequence:@[move, done]];
-    
-    SKAction *sequence = [SKAction group:@[moveSeq,
-                                           [SKAction repeatActionForever:
-                                            [SKAction animateWithTextures:self.heroWalkFrames
-                                                             timePerFrame:0.1f
-                                                                   resize:NO
-                                                                  restore:YES]]
-                                           ]];
-    
-    
-    [self.hero runAction:sequence withKey:@"move"];
+    return targetPoint;
+}
+
+- (CGFloat) distanceBetweenTwoPoints:(CGPoint) p1 and:(CGPoint)p2 {
+    CGFloat xDist = (p2.x - p1.x);
+    CGFloat yDist = (p2.y - p1.y);
+    return sqrt((xDist * xDist) + (yDist * yDist));
 }
 
 - (SKAction *) moveToWithSpeed:(CGPoint)p1 to:(CGPoint)p2 {
-    CGFloat xDist = (p2.x - p1.x);
-    CGFloat yDist = (p2.y - p1.y);
-    CGFloat distance = sqrt((xDist * xDist) + (yDist * yDist));
     
-    float speed = kHeroWalkSpeed;
-    NSTimeInterval duration = distance/speed;
+    CGFloat distance = [self distanceBetweenTwoPoints:p1 and:p2];
+    
+//    float speed = kHeroWalkSpeed;
+    NSTimeInterval duration = distance/kHeroWalkSpeed;
     SKAction *move  = [SKAction moveTo:p2 duration:duration];
     return move;
 }
@@ -520,7 +598,7 @@ bool isDebugModeOn = true;
 //    int yEnd = self.rabbit.position.y + [self getRandomNumberBetween:-200 to:200];
     int xEnd = self.rabbit.position.x + xMove;
     int yEnd = self.rabbit.position.y + yMove;
-    
+    /*
     if (xEnd < 0 ) {
   //      xEnd = 20;
     }
@@ -536,6 +614,7 @@ bool isDebugModeOn = true;
         yEnd = screenHeight - 20;
         NSLog(@"adjust yEnd to less than screenHeight");
     }
+     */
     
     int xDistance = [self calcDistanceBetween:xStart and:xEnd];
     int yDistance = [self calcDistanceBetween:yStart and:yEnd];
@@ -553,6 +632,9 @@ bool isDebugModeOn = true;
     CGPoint pointEnd = CGPointMake(xEnd, yEnd);
     CGPoint pointCP1 = CGPointMake(cp1X, cp1Y);
     CGPoint pointCP2 = CGPointMake(cp2X, cp2Y);
+    
+    pointEnd = [self adjustPointWithinWorldBounds:pointEnd]; // should cp1 and cp2 also, but too lazy now
+    
     CGPathMoveToPoint(cgpath, NULL, pointStart.x, pointStart.y);
     
     NSLog(@"start: %.0fx%.0f  cp1: %.0fx%.0f cp2: %.0fx%.0f  END: %.0fx%.0f ", pointStart.x,pointStart.y, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
@@ -573,7 +655,6 @@ bool isDebugModeOn = true;
                                            ]];
     
     if (isDebugModeOn ) {
-//
         SKNode *foo = [self.world childNodeWithName:@"pathPoints"];
         while (foo != nil ){
             [foo removeFromParent];
@@ -652,7 +733,7 @@ bool isDebugModeOn = true;
         return;
     }
     
-//    [self HeroStopWalking];
+    [self HeroStopWalking];
 
     [self.hero runAction:   [SKAction animateWithTextures:self.heroFireFrames timePerFrame:0.1f resize:NO restore:YES] ];
     
