@@ -29,7 +29,10 @@
 		386A11341870E0AA0027CDB2 /* test-level-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 386A11331870E0AA0027CDB2 /* test-level-1.png */; };
 		38724377186F6AE600821CDD /* shooters.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38724376186F6AE600821CDD /* shooters.atlas */; };
 		3879B169187CBF7A006837DE /* SmokeParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 3879B168187CBF7A006837DE /* SmokeParticle.sks */; };
+		3879B4E21891B79D00749FFD /* wallTop.png in Resources */ = {isa = PBXBuildFile; fileRef = 3879B4E11891B79D00749FFD /* wallTop.png */; };
+		3879B4E41891BA8400749FFD /* grassFieldAndWall.png in Resources */ = {isa = PBXBuildFile; fileRef = 3879B4E31891BA8400749FFD /* grassFieldAndWall.png */; };
 		387D10A11889832A007D013A /* rabbit.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 387D10A01889832A007D013A /* rabbit.atlas */; };
+		38C019871890889500B4B6CB /* wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 38C019861890889500B4B6CB /* wall.png */; };
 		38D1C2F5187C6A97003F6F77 /* BulletExplode.sks in Resources */ = {isa = PBXBuildFile; fileRef = 38D1C2F3187C6A97003F6F77 /* BulletExplode.sks */; };
 		38D1C2F6187C6A97003F6F77 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 38D1C2F4187C6A97003F6F77 /* spark.png */; };
 		38D7E872187749B900B442C2 /* hero.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 38D7E871187749B900B442C2 /* hero.atlas */; };
@@ -75,7 +78,10 @@
 		386A11331870E0AA0027CDB2 /* test-level-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-level-1.png"; sourceTree = "<group>"; };
 		38724376186F6AE600821CDD /* shooters.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = shooters.atlas; sourceTree = "<group>"; };
 		3879B168187CBF7A006837DE /* SmokeParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SmokeParticle.sks; sourceTree = "<group>"; };
+		3879B4E11891B79D00749FFD /* wallTop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wallTop.png; sourceTree = "<group>"; };
+		3879B4E31891BA8400749FFD /* grassFieldAndWall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grassFieldAndWall.png; sourceTree = "<group>"; };
 		387D10A01889832A007D013A /* rabbit.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = rabbit.atlas; sourceTree = "<group>"; };
+		38C019861890889500B4B6CB /* wall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wall.png; sourceTree = "<group>"; };
 		38D1C2F3187C6A97003F6F77 /* BulletExplode.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = BulletExplode.sks; sourceTree = "<group>"; };
 		38D1C2F4187C6A97003F6F77 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		38D7E871187749B900B442C2 /* hero.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = hero.atlas; sourceTree = "<group>"; };
@@ -192,6 +198,9 @@
 		38D7E8701877499F00B442C2 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				3879B4E31891BA8400749FFD /* grassFieldAndWall.png */,
+				3879B4E11891B79D00749FFD /* wallTop.png */,
+				38C019861890889500B4B6CB /* wall.png */,
 				387D10A01889832A007D013A /* rabbit.atlas */,
 				38D7E87318775A1E00B442C2 /* projectile.png */,
 				38D7E871187749B900B442C2 /* hero.atlas */,
@@ -283,6 +292,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				386A11321870DAE40027CDB2 /* greenGrassBackground-2.png in Resources */,
+				3879B4E21891B79D00749FFD /* wallTop.png in Resources */,
 				38D7E872187749B900B442C2 /* hero.atlas in Resources */,
 				382A5C6B187338D00010A7C7 /* grassField4096.png in Resources */,
 				3879B169187CBF7A006837DE /* SmokeParticle.sks in Resources */,
@@ -293,8 +303,10 @@
 				38D1C2F5187C6A97003F6F77 /* BulletExplode.sks in Resources */,
 				381943EA186E2490002EDE8C /* InfoPlist.strings in Resources */,
 				381943FD186E2490002EDE8C /* Images.xcassets in Resources */,
+				38C019871890889500B4B6CB /* wall.png in Resources */,
 				3819441A186E39D1002EDE8C /* greenGrassBackground.png in Resources */,
 				386A11341870E0AA0027CDB2 /* test-level-1.png in Resources */,
+				3879B4E41891BA8400749FFD /* grassFieldAndWall.png in Resources */,
 				381943F3186E2490002EDE8C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

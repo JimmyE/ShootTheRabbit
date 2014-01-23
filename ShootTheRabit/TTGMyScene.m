@@ -33,6 +33,7 @@ const int kNumberOfRabbitWalkingImages = 4;
 static const uint32_t heroCategory     =  0x1 << 0;
 static const uint32_t projectileCategory  =  0x1 << 1;
 static const uint32_t rabbitCategory   =  0x1 << 2;
+//static const uint32_t wallCategory = 0x1 << 3;
 
 
 @interface TTGMyScene()
@@ -48,7 +49,8 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 
 @implementation TTGMyScene
 
-NSString * const kBackgroudImageName = @"grassField4096";
+//NSString * const kBackgroudImageName = @"grassField4096";
+NSString * const kBackgroudImageName = @"grassFieldAndWall";
 NSString * const kHeroStandImage = @"heroStand";
 NSString * const kRabbitStandImage = @"rabbit_stand";
 
@@ -68,7 +70,11 @@ bool isDebugModeOn = true;
         self.anchorPoint = CGPointMake(0.5, 0.5);  // set anchor to Center of scene
         
         _world = [SKSpriteNode spriteNodeWithImageNamed:kBackgroudImageName];
+//        _world.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:_world.frame];
+
         [self addChild:_world];
+        
+        NSLog(@"world %.01f %.01f", _world.position.x, _world.position.y);
         
         _heroWalkFrames = [NSMutableArray new];
         _heroFireFrames = [NSMutableArray new];
@@ -105,7 +111,6 @@ bool isDebugModeOn = true;
             }];
         }];
 
-        
         _projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
         _projectile.xScale = 0.5;
         _projectile.yScale = 0.5;
@@ -113,6 +118,7 @@ bool isDebugModeOn = true;
         self.physicsWorld.gravity = CGVectorMake(0, 0); // no gravity!
         self.physicsWorld.contactDelegate = self;
         
+
         [self setupHud];
     }
     return self;
@@ -122,7 +128,7 @@ bool isDebugModeOn = true;
     SKTexture *heroStand = [SKTexture textureWithImageNamed:kHeroStandImage];
     _hero = [SKSpriteNode spriteNodeWithTexture:heroStand];
     
-    _hero.position = CGPointMake(250, 150);
+    _hero.position = CGPointMake(700, 790);
     _hero.name = @"hero";
     _hero.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:_hero.size];
     _hero.physicsBody.dynamic = YES;
@@ -171,12 +177,10 @@ bool isDebugModeOn = true;
     _rabbit.physicsBody.contactTestBitMask = projectileCategory;
     _rabbit.physicsBody.collisionBitMask = heroCategory;
     
-    [self.world addChild:_rabbit];
-    
     NSLog(@"Rabbit created at x,y:  %.0f %.0f   hero.pos: %.0f %.0f", self.rabbit.position.x, self.rabbit.position.y, self.hero.position.x, self.hero.position.y);
     
+    [self.world addChild:_rabbit];
     [self runRabbitRunAlt2];
-    
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -222,17 +226,6 @@ bool isDebugModeOn = true;
     {
         [self projectile:(SKSpriteNode *) firstBody.node didCollideWithRabbit:(SKSpriteNode *) secondBody.node];
     }
-    
- /*   int bb1 = firstBody.categoryBitMask & rabbitCategory;
-    int bb2 = firstBody.categoryBitMask & projectileCategory;
-    int bb3 = firstBody.categoryBitMask & heroCategory;
-    
-    int abb1 = secondBody.categoryBitMask & rabbitCategory;
-    int abb2 = secondBody.categoryBitMask & projectileCategory;
-    int abb3 = secondBody.categoryBitMask & heroCategory;
-    
-    NSLog(@"%d %d %d %d %d %d", bb1, bb2, bb3, abb1, abb2, abb3);
-   */
 }
 
 - (void) killAnimal:(SKSpriteNode *) animal {
@@ -321,34 +314,7 @@ bool isDebugModeOn = true;
     }
 }
 
--(void)setupHudOLD {
-    SKLabelNode* scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"Courier"];
-    int margin = 10;
-    scoreLabel.name = kScoreHudName;
-    scoreLabel.fontSize = 15;
-    scoreLabel.fontColor = [SKColor greenColor];
-    scoreLabel.text = [NSString stringWithFormat:@"Score: %02u", 0];
-//    scoreLabel.position = CGPointMake(20 + scoreLabel.frame.size.width/2, self.size.height - (20 + scoreLabel.frame.size.height/2));
-    scoreLabel.position = CGPointMake(margin + scoreLabel.frame.size.width/2, screenHeight - (margin + scoreLabel.frame.size.height/2));
-//    NSLog(@"label.pos.x: %f   pos.y: %f", scoreLabel.position.x, scoreLabel.position.y);
-    
-    [self addChild:scoreLabel];
-    
-    SKLabelNode* healthLabel = [SKLabelNode labelNodeWithFontNamed:@"Courier"];
-    healthLabel.name = kHeroPosName;
-    healthLabel.fontSize = 15;
-    healthLabel.fontColor = [SKColor redColor];
-    healthLabel.text = [NSString stringWithFormat:@"Hero: x: 000.0 y: 000.0 world.pos.x: 0  pos.y: 00"];
-//    healthLabel.position = CGPointMake(self.size.width - healthLabel.frame.size.width/2 - margin, self.size.height - (margin + healthLabel.frame.size.height/2));
-//    [self addChild:healthLabel];
-
-//    healthLabel.position = CGPointMake(self.size.width - healthLabel.frame.size.width/2 - margin, self.size.height - (margin + healthLabel.frame.size.height/2));
-//    healthLabel.position = CGPointMake(self.camera.frame.size.width - healthLabel.frame.size.width/2 - margin, self.camera.frame.size.height - (margin + healthLabel.frame.size.height/2));
-    healthLabel.position = CGPointMake(0, 0);
-
-    [self.world addChild:healthLabel];
-}
-
+/*
 - (void)centerWorldOnHero {
     [self centerWorldOnPosition:self.hero.position];
 }
@@ -360,9 +326,30 @@ bool isDebugModeOn = true;
     
    // self.worldMovedForUpdate = YES;
 }
+ */
 
 #pragma mark Hero
 - (void) moveHeroToPoint:(CGPoint)targetPoint {
+    
+    const int wallSize = 10;
+    const int maxX = ((self.world.size.width / 2) - wallSize - (self.hero.size.width /2));
+    const int minX = maxX * -1;
+    const int maxY = (self.world.size.height / 2) - wallSize - (self.hero.size.height);
+    const int minY = maxY * -1;
+    
+    if (targetPoint.x < minX ){
+        targetPoint.x = minX;
+    }
+    else if (targetPoint.x > maxX ){
+        targetPoint.x = maxX;
+    }
+    
+    if (targetPoint.y < minY) {
+        targetPoint.y = minY;
+    }
+    else if (targetPoint.y > maxY) {
+        targetPoint.y = maxY;
+    }
     
     if ([self.hero actionForKey:@"move"]) {
         [self.hero removeAllActions];
@@ -732,6 +719,9 @@ bool isDebugModeOn = true;
 - (void) centerOnNode: (SKNode *) node
 {
     CGPoint cameraPositionInScene = [node.scene convertPoint:node.position fromNode:node.parent];
+    
+   // NSLog(@"centerOnNode  %.0f  %.0f  %d", node.parent.position.x, self.hero.position.x, (int)(self.world.size.width /2));
+    
     node.parent.position = CGPointMake(node.parent.position.x - cameraPositionInScene.x,
                                        node.parent.position.y - cameraPositionInScene.y);
 }
