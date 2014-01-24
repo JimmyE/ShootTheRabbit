@@ -27,9 +27,11 @@
 #define kRabbitRunDuration 1.5
 #define kRabbitRunSpeed 180.0  // Distance??
 
-const int kNumberOfHeroWalkingImages = 3;
-const int kNumberOfHeroFiringImages = 2;
-const int kNumberOfRabbitWalkingImages = 4;
+static const int kNumberOfHeroWalkingImages = 3;
+static const int kNumberOfHeroFiringImages = 2;
+static const int kNumberOfRabbitWalkingImages = 4;
+static const int kMinDistanceForceRabbitRunAway = 130;
+static const int wallSize = 10;
 
 static const uint32_t heroCategory     =  0x1 << 0;
 static const uint32_t projectileCategory  =  0x1 << 1;
@@ -47,6 +49,12 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) NSMutableArray *heroFireFrames;
 @property (nonatomic) NSMutableArray *rabbitWalkFrames;
+
+@property (nonatomic) NSInteger worldMaxX;
+@property (nonatomic) NSInteger worldMaxY;
+@property (nonatomic) NSInteger worldMinX;
+@property (nonatomic) NSInteger worldMinY;
+
 @end
 
 @implementation TTGMyScene
@@ -56,6 +64,8 @@ NSString * const kBackgroudImageName = @"grassFieldAndWall";
 NSString * const kHeroStandImage = @"heroStand";
 NSString * const kRabbitStandImage = @"rabbit_stand";
 NSString * const kRabbitArrowImage = @"arrow3";
+NSString * const kActionRabbitMove = @"moveRabbit";
+NSString * const kActionRabbitMoveTooClose = @"moveRabbitTooClose";
 
 //CGRect screenRect;
 CGFloat screenHeight;
@@ -99,6 +109,10 @@ static inline CGPoint rwNormalize(CGPoint a) {
         self.anchorPoint = CGPointMake(0.5, 0.5);  // set anchor to Center of scene
         
         _world = [SKSpriteNode spriteNodeWithImageNamed:kBackgroudImageName];
+        _worldMaxX = (_world.size.width /2) - wallSize;
+        _worldMaxY = (_world.size.height/2) - wallSize;
+        _worldMinX = _worldMaxX * -1;
+        _worldMinY = _worldMaxY * -1;
 //        _world.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:_world.frame];
 
         [self addChild:_world];
@@ -452,11 +466,10 @@ static inline CGPoint rwNormalize(CGPoint a) {
 }
 
 - (CGPoint) adjustPointWithinWorldBounds:(CGPoint) targetPoint {
-    const int wallSize = 10;
-    const int maxX = ((self.world.size.width / 2) - wallSize - (self.hero.size.width /2));
-    const int minX = maxX * -1;
-    const int maxY = (self.world.size.height / 2) - wallSize - (self.hero.size.height);
-    const int minY = maxY * -1;
+    const int maxX = self.worldMaxX - (self.hero.size.width /2);
+    const int maxY = self.worldMaxY - (self.hero.size.height);
+    const int minX = (int)self.worldMinY;
+    const int minY = (int)self.worldMinY;
     
     if (targetPoint.x < minX ){
         targetPoint.x = minX;
@@ -527,7 +540,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
                                            ]];
     
     
-    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+    [self.rabbit runAction:sequence withKey:kActionRabbitMove];
 }
 
 - (void) runRabbitRunAlt1 {
@@ -572,7 +585,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
                                                                   restore:YES]]
                                            ]];
     
-    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+    [self.rabbit runAction:sequence withKey:kActionRabbitMove];
 }
 
 - (int) calcDistanceBetween:(int)point1 and:(int)point2 {
@@ -661,8 +674,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
     pointEnd = [self adjustPointWithinWorldBounds:pointEnd]; // should cp1 and cp2 also, but too lazy now
     
     CGPathMoveToPoint(cgpath, NULL, pointStart.x, pointStart.y);
-    
-    NSLog(@"start: %.0fx%.0f  cp1: %.0fx%.0f cp2: %.0fx%.0f  END: %.0fx%.0f ", pointStart.x,pointStart.y, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
+ 
+//    NSLog(@"start: %.0fx%.0f  cp1: %.0fx%.0f cp2: %.0fx%.0f  END: %.0fx%.0f ", pointStart.x,pointStart.y, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
     
     CGPathAddCurveToPoint(cgpath, NULL, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
     
@@ -706,7 +719,113 @@ static inline CGPoint rwNormalize(CGPoint a) {
         [self.world addChild:pS];
     }
     
-    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+//    [self RabbitStopWalking]; //kill current movement
+    [self.rabbit runAction:sequence withKey:kActionRabbitMove];
+}
+
+- (bool) isRabbitAlreadyRunning {
+    if ([self.rabbit actionForKey:kActionRabbitMoveTooClose] ||
+        [self.rabbit actionForKey:kActionRabbitMove] )  {
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (void ) runRabbitRunTooClose {
+    if ([self isRabbitAlreadyRunning]) {
+        return;
+    }
+    
+    NSLog(@"runRabbitRunTooClose ** ");
+    CGMutablePathRef cgpath = CGPathCreateMutable();
+    
+    int xMove = [self getRandomNumberBetween:150 to:350];
+    int yMove = [self getRandomNumberBetween:150 to:350];
+    int x1 = 80;
+    int x2 = 150;
+    int y1 = (yMove/3);
+    int y2 = 100;
+    
+    const int minDistanceToWall =50;
+    
+    if (self.rabbit.position.x - minDistanceToWall < self.worldMinX ) {
+        //too close to left wall; keep xMove positive - move away from wall
+    }
+    else if (yMove % 2 == 0 || self.rabbit.position.y + minDistanceToWall > self.worldMaxY) {
+        yMove *= -1;
+        y1 *= -1;
+        y2 *= -1;
+    }
+
+    if (self.rabbit.position.y - minDistanceToWall < self.worldMinY ) {
+        //too close to bottom wall; keep yMove positive - move away from wall
+    }
+    else if (xMove % 2 == 0 || self.rabbit.position.x + minDistanceToWall > self.worldMaxX) {
+        xMove *= -1;
+        x1 *= -1;
+        x2 *= -1;
+    }
+
+
+//    if (self.rabbit.position.x > self.)
+    
+    CGPoint pointStart = CGPointMake(self.rabbit.position.x, self.rabbit.position.y);
+    CGPoint pointEnd = CGPointMake(pointStart.x + xMove, pointStart.y + yMove);
+    
+    CGPoint pointCP1 = CGPointMake(pointStart.x + xMove + x1, pointStart.y + y1);
+    CGPoint pointCP2 = CGPointMake(pointStart.x + xMove + x2, pointCP1.y + y2);
+    
+    pointEnd = [self adjustPointWithinWorldBounds:pointEnd]; // should cp1 and cp2 also, but too lazy now
+    
+    CGPathMoveToPoint(cgpath, NULL, pointStart.x, pointStart.y);
+    
+    //    NSLog(@"start: %.0fx%.0f  cp1: %.0fx%.0f cp2: %.0fx%.0f  END: %.0fx%.0f ", pointStart.x,pointStart.y, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
+    
+    CGPathAddCurveToPoint(cgpath, NULL, pointCP1.x, pointCP1.y, pointCP2.x, pointCP2.y, pointEnd.x, pointEnd.y);
+    
+    SKAction *rabbitPath = [SKAction followPath:cgpath asOffset:NO orientToPath:YES duration:3];
+    
+    //    [self.rabbit runAction:planePath];
+    SKAction *done = [SKAction runBlock:^ { [self RabbitStopWalking]; }];
+    SKAction *moveSeq = [SKAction sequence:@[ rabbitPath, done]];
+    SKAction *sequence = [SKAction group:@[moveSeq,
+                                           [SKAction repeatActionForever:
+                                            [SKAction animateWithTextures:self.rabbitWalkFrames
+                                                             timePerFrame:0.1f
+                                                                   resize:NO
+                                                                  restore:YES]]
+                                           ]];
+    
+    if (isDebugModeOn ) {
+        SKNode *foo = [self.world childNodeWithName:@"pathPoints"];
+        while (foo != nil ){
+            [foo removeFromParent];
+            foo = [self.world childNodeWithName:@"pathPoints"];
+        }
+        
+        SKShapeNode *pNode = [SKShapeNode new];
+        //        roke and fill = 2 nodes
+        CGMutablePathRef myPath = CGPathCreateMutable();
+        CGPathAddArc(myPath, NULL, 0, 0, 4, 0, M_PI*2, YES);
+        pNode.path = myPath;
+        pNode.fillColor = [SKColor blueColor];
+        pNode.position = pointCP1;
+        pNode.name = @"pathPoints";
+        [self.world addChild:pNode];
+        
+        SKShapeNode *p2 = [pNode copy];
+        p2.position = pointCP2;
+        [self.world addChild:p2];
+        
+        SKShapeNode *pS = [pNode copy];
+        pS.position = pointStart;
+        pS.fillColor = [SKColor redColor];
+        [self.world addChild:pS];
+    }
+    
+    //    [self RabbitStopWalking]; //kill current movement
+    [self.rabbit runAction:sequence withKey:kActionRabbitMoveTooClose];
 }
 
 - (void) RabbitCharge {
@@ -738,7 +857,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
                                            ]];
     
     
-    [self.rabbit runAction:sequence withKey:@"moveRabbit"];
+    [self.rabbit runAction:sequence withKey:kActionRabbitMove];
 
 }
 
@@ -806,7 +925,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
 
 #pragma mark IOS Events
 -(void) ShakeGesture {
-   [self RabbitCharge];
+    [self HeroStopWalking];
+    [self RabbitCharge];
 }
 
 #pragma mark GameLoop Events
@@ -818,8 +938,13 @@ static inline CGPoint rwNormalize(CGPoint a) {
 }
 
 - (void)didSimulatePhysics {
-   [self centerOnNode: _hero];
+    [self centerOnNode: _hero];
     [self updateHudHeroPos];
+    
+    CGFloat distance = [self distanceBetweenTwoPoints:self.hero.position and:self.rabbit.position];
+    if (distance < kMinDistanceForceRabbitRunAway) {
+        [self runRabbitRunTooClose];
+    }
 }
 
 - (void) centerOnNode: (SKNode *) node
@@ -830,44 +955,6 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
     node.parent.position = CGPointMake(node.parent.position.x - cameraPositionInScene.x,
                                        node.parent.position.y - cameraPositionInScene.y);
-}
-
-
-- (void)alltl_didSimulatePhysics {
-    CGPoint heroPosition = self.hero.position;
-    int kMinHeroToEdgeDistance = 70;
-    
-    if (heroPosition.y + kMinHeroToEdgeDistance > self.frame.size.height / 2) {
-        NSLog(@" center node.  %.1f", self.frame.size.height);
-        [self centerOnNode:_hero];
-    }
-
-    [self updateHudHeroPos];
-}
-
-- (void)old_didSimulatePhysics {
-    CGPoint heroPosition = self.hero.position;
-    CGPoint worldPos = self.world.position;
-    CGFloat yCoordinate = worldPos.y + heroPosition.y;
-    int kMinHeroToEdgeDistance = 130;
-
-      if (yCoordinate < kMinHeroToEdgeDistance) {
-          NSLog(@"Center world - 1" );
-          [self centerOnNode: _hero];
-      }
-      else if (yCoordinate > (self.frame.size.height - kMinHeroToEdgeDistance)) {
-          NSLog(@"Center world - 2" );
-          [self centerOnNode: _hero];
-      }
-    
-   CGFloat xCoordinate = worldPos.x + heroPosition.x;
-   if (xCoordinate < kMinHeroToEdgeDistance) {
-     //   worldPos.x = worldPos.x - xCoordinate + kMinHeroToEdgeDistance;
-//        NSLog(@"Too close to right edge");
-    }
-
-//    self.world.position = worldPos;
-    [self updateHudHeroPos];
 }
 
 @end
