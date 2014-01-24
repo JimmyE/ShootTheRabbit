@@ -42,6 +42,7 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 @property (nonatomic) SKSpriteNode *rabbit; //assume, only 1 for now
 @property (nonatomic) SKSpriteNode *world;
 @property (nonatomic) SKNode *gameHudNode;
+@property (nonatomic) SKSpriteNode *rabbitFinder;
 @property (nonatomic) SKSpriteNode *projectile;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) NSMutableArray *heroFireFrames;
@@ -54,12 +55,13 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 NSString * const kBackgroudImageName = @"grassFieldAndWall";
 NSString * const kHeroStandImage = @"heroStand";
 NSString * const kRabbitStandImage = @"rabbit_stand";
+NSString * const kRabbitArrowImage = @"arrow3";
 
 //CGRect screenRect;
 CGFloat screenHeight;
 CGFloat screenWidth;
 int rabbitKills = 0;
-bool isDebugModeOn = true;
+bool isDebugModeOn = false;
 
 #pragma mark Vector Math
 
@@ -278,7 +280,6 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
 }
 
-
 - (SKLabelNode*) createDefaultHudLabel:(NSString *)labelName  {
     
     SKLabelNode *label = [SKLabelNode labelNodeWithFontNamed:@"Copperplate"];
@@ -301,7 +302,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
 
     SKLabelNode *labelPosition = [self createDefaultHudLabel:kPlayerPosLabel];
     labelPosition.text = @"starting up...";
-    labelPosition.position = CGPointMake(0, 0);
+    labelPosition.position = CGPointMake(70, 0);
     [_gameHudNode addChild:labelPosition];
 
     SKLabelNode *gameStats = [self createDefaultHudLabel:kGameStatLabel];
@@ -311,8 +312,14 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
     SKLabelNode *debug = [self createDefaultHudLabel:kGameDebugLabel];
     debug.text = @"debug off";
-    debug.position = CGPointMake(screenWidth/2, 0);
+    debug.position = CGPointMake(0, 0);
     [_gameHudNode addChild:debug];
+    
+    _rabbitFinder = [SKSpriteNode spriteNodeWithImageNamed:kRabbitArrowImage];
+    _rabbitFinder.name = @"hudArrow";
+    _rabbitFinder.size = CGSizeMake(20, 20);
+    _rabbitFinder.position = CGPointMake(screenWidth/2, 0);
+    [_gameHudNode addChild:_rabbitFinder];
     
 //    [self.world addChild:hud]; //doens't move when player moves
     [self addChild:_gameHudNode];
@@ -340,6 +347,9 @@ static inline CGPoint rwNormalize(CGPoint a) {
         debug.text = @"debug off";
         posNode.text = @"";
     }
+    
+    double angle = atan2(self.rabbit.position.y - self.hero.position.y, self.rabbit.position.x - self.hero.position.x);
+    [self.rabbitFinder runAction:[SKAction rotateToAngle:angle duration:.1]];
 }
 
 /*
