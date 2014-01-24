@@ -42,7 +42,7 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 @property (nonatomic) SKSpriteNode *rabbit; //assume, only 1 for now
 @property (nonatomic) SKSpriteNode *world;
 @property (nonatomic) SKNode *gameHudNode;
-@property (nonatomic) SKSpriteNode *rabbitFinder;
+@property (nonatomic) SKNode *rabbitFinder;
 @property (nonatomic) SKSpriteNode *projectile;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) NSMutableArray *heroFireFrames;
@@ -315,10 +315,20 @@ static inline CGPoint rwNormalize(CGPoint a) {
     debug.position = CGPointMake(0, 0);
     [_gameHudNode addChild:debug];
     
-    _rabbitFinder = [SKSpriteNode spriteNodeWithImageNamed:kRabbitArrowImage];
-    _rabbitFinder.name = @"hudArrow";
-    _rabbitFinder.size = CGSizeMake(20, 20);
+    
+    _rabbitFinder = [SKNode new];
     _rabbitFinder.position = CGPointMake(screenWidth/2, 0);
+
+    SKSpriteNode *arrow = [SKSpriteNode spriteNodeWithImageNamed:kRabbitArrowImage];
+    arrow.name = @"hudArrow";
+    arrow.size = CGSizeMake(20, 20);
+    [_rabbitFinder addChild:arrow];
+    
+    SKLabelNode *rabbitDistance = [self createDefaultHudLabel:@"distance"];
+    rabbitDistance.position = CGPointMake((arrow.size.width/2) * -1, (arrow.size.height) * -1);
+    rabbitDistance.text = @"xxx";
+    [_rabbitFinder addChild:rabbitDistance];
+                                   
     [_gameHudNode addChild:_rabbitFinder];
     
 //    [self.world addChild:hud]; //doens't move when player moves
@@ -349,7 +359,12 @@ static inline CGPoint rwNormalize(CGPoint a) {
     }
     
     double angle = atan2(self.rabbit.position.y - self.hero.position.y, self.rabbit.position.x - self.hero.position.x);
-    [self.rabbitFinder runAction:[SKAction rotateToAngle:angle duration:.1]];
+    SKSpriteNode *arrow = (SKSpriteNode*) [self.rabbitFinder childNodeWithName:@"hudArrow"];
+    [arrow runAction:[SKAction rotateToAngle:angle duration:.1]];
+    
+    SKLabelNode *distanceNode = (SKLabelNode*) [self.rabbitFinder childNodeWithName:@"distance"];
+    CGFloat distance = [self distanceBetweenTwoPoints:self.rabbit.position and:self.hero.position] - self.hero.size.width;
+    distanceNode.text = [NSString stringWithFormat:@"%d", abs(distance/ 5)];
 }
 
 /*
