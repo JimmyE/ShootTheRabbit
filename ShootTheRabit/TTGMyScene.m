@@ -7,6 +7,7 @@
 //
 
 #import "TTGMyScene.h"
+@import AVFoundation;
 
 #define kScoreHudName @"scoreHud"
 #define kHeroPosName @"heroPos"
@@ -49,6 +50,8 @@ static const uint32_t rabbitCategory   =  0x1 << 2;
 @property (nonatomic) NSMutableArray *heroWalkFrames;
 @property (nonatomic) NSMutableArray *heroFireFrames;
 @property (nonatomic) NSMutableArray *rabbitWalkFrames;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
+
 
 @property (nonatomic) NSInteger worldMaxX;
 @property (nonatomic) NSInteger worldMaxY;
@@ -66,6 +69,10 @@ NSString * const kRabbitStandImage = @"rabbit_stand";
 NSString * const kRabbitArrowImage = @"arrow3";
 NSString * const kActionRabbitMove = @"moveRabbit";
 NSString * const kActionRabbitMoveTooClose = @"moveRabbitTooClose";
+NSString * const kSoundGunFire = @"handgun_500a.m4a";
+NSString * const kSoundAnimalKil = @"animal_hit.m4a";
+NSString * const kSoundBackgroundMusic = @"CongoLoop.m4a";
+const float kBackgroundVolume = 0.3f;
 
 //CGRect screenRect;
 CGFloat screenHeight;
@@ -101,70 +108,79 @@ static inline CGPoint rwNormalize(CGPoint a) {
 #pragma mark initialize
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
-        
-        screenWidth = size.width;
-        screenHeight = size.height;
-//        NSLog(@"screenWidth: %.0f  screenHeight: %.0f", screenWidth, screenHeight);
-      
-        self.anchorPoint = CGPointMake(0.5, 0.5);  // set anchor to Center of scene
-        
-        _world = [SKSpriteNode spriteNodeWithImageNamed:kBackgroudImageName];
-        _worldMaxX = (_world.size.width /2) - wallSize;
-        _worldMaxY = (_world.size.height/2) - wallSize;
-        _worldMinX = _worldMaxX * -1;
-        _worldMinY = _worldMaxY * -1;
-//        _world.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:_world.frame];
-
-        [self addChild:_world];
-        
-        NSLog(@"world %.01f %.01f", _world.position.x, _world.position.y);
-        
-        _heroWalkFrames = [NSMutableArray new];
-        _heroFireFrames = [NSMutableArray new];
-        _rabbitWalkFrames = [NSMutableArray new];
-        
-        SKTextureAtlas *heroAtlas = [SKTextureAtlas atlasNamed:@"hero"];
-        SKTextureAtlas *rabbitAtlas = [SKTextureAtlas atlasNamed:@"rabbit"];
-        
-        for (int i = 0; i < kNumberOfHeroFiringImages; i++) {
-            NSString *textureName = [NSString stringWithFormat:@"heroFire%02d", i + 1];  //use 'i + 1', since images start with '1'
-            SKTexture *temp = [heroAtlas textureNamed:textureName];
-            [_heroFireFrames addObject:temp];
-        }
-
-        for (int i = 0; i < kNumberOfHeroWalkingImages; i++) {
-            NSString *textureName = [NSString stringWithFormat:@"heroWalk%02d", i + 1];  //use 'i + 1', since images start with '1'
-            SKTexture *temp = [heroAtlas textureNamed:textureName];
-            [_heroWalkFrames addObject:temp];
-        }
-
-        for (int i = 0; i < kNumberOfRabbitWalkingImages; i++) {
-            NSString *textureName = [NSString stringWithFormat:@"rabbit_walk_%01d", i + 1];  //use 'i + 1', since images start with '1'
-            SKTexture *temp = [rabbitAtlas textureNamed:textureName];
-            [_rabbitWalkFrames addObject:temp];
-        }
-
-        
-        [SKTexture preloadTextures:_heroFireFrames withCompletionHandler:^(void ) {}];
-        [SKTexture preloadTextures:_heroWalkFrames withCompletionHandler:^(void){
-            [self createHero];  //preload image, else hero "flashes white" when first starting to move
-
-            [SKTexture preloadTextures:_rabbitWalkFrames withCompletionHandler:^(void) {
-                [self createRabbit];
-            }];
-        }];
-
-        _projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
-        _projectile.xScale = 0.5;
-        _projectile.yScale = 0.5;
-        
-        self.physicsWorld.gravity = CGVectorMake(0, 0); // no gravity!
-        self.physicsWorld.contactDelegate = self;
-        
-
-        [self setupHud];
+        [self initializeGame:size];
     }
     return self;
+}
+
+- (void) initializeGame:(CGSize) size {
+    if (_world != nil ) {
+        NSLog(@"early exit - already initialzed");
+    }
+    
+    screenWidth = size.width;
+    screenHeight = size.height;
+    //        NSLog(@"screenWidth: %.0f  screenHeight: %.0f", screenWidth, screenHeight);
+    
+    self.anchorPoint = CGPointMake(0.5, 0.5);  // set anchor to Center of scene
+    
+    _world = [SKSpriteNode spriteNodeWithImageNamed:kBackgroudImageName];
+    _worldMaxX = (_world.size.width /2) - wallSize;
+    _worldMaxY = (_world.size.height/2) - wallSize;
+    _worldMinX = _worldMaxX * -1;
+    _worldMinY = _worldMaxY * -1;
+    //        _world.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:_world.frame];
+    
+    [self addChild:_world];
+    
+    NSLog(@"world %.01f %.01f", _world.position.x, _world.position.y);
+    
+    _heroWalkFrames = [NSMutableArray new];
+    _heroFireFrames = [NSMutableArray new];
+    _rabbitWalkFrames = [NSMutableArray new];
+    
+    SKTextureAtlas *heroAtlas = [SKTextureAtlas atlasNamed:@"hero"];
+    SKTextureAtlas *rabbitAtlas = [SKTextureAtlas atlasNamed:@"rabbit"];
+    
+    for (int i = 0; i < kNumberOfHeroFiringImages; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"heroFire%02d", i + 1];  //use 'i + 1', since images start with '1'
+        SKTexture *temp = [heroAtlas textureNamed:textureName];
+        [_heroFireFrames addObject:temp];
+    }
+    
+    for (int i = 0; i < kNumberOfHeroWalkingImages; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"heroWalk%02d", i + 1];  //use 'i + 1', since images start with '1'
+        SKTexture *temp = [heroAtlas textureNamed:textureName];
+        [_heroWalkFrames addObject:temp];
+    }
+    
+    for (int i = 0; i < kNumberOfRabbitWalkingImages; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"rabbit_walk_%01d", i + 1];  //use 'i + 1', since images start with '1'
+        SKTexture *temp = [rabbitAtlas textureNamed:textureName];
+        [_rabbitWalkFrames addObject:temp];
+    }
+    
+    
+    [SKTexture preloadTextures:_heroFireFrames withCompletionHandler:^(void ) {}];
+    [SKTexture preloadTextures:_heroWalkFrames withCompletionHandler:^(void){
+        [self createHero];  //preload image, else hero "flashes white" when first starting to move
+        
+        [SKTexture preloadTextures:_rabbitWalkFrames withCompletionHandler:^(void) {
+            [self createRabbit];
+        }];
+    }];
+    
+    _projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
+    _projectile.xScale = 0.5;
+    _projectile.yScale = 0.5;
+    
+    self.physicsWorld.gravity = CGVectorMake(0, 0); // no gravity!
+    self.physicsWorld.contactDelegate = self;
+    
+    
+    [self setupHud];
+    
+    [self startBackgroundMusic];
 }
 
 - (void) createHero {
@@ -274,8 +290,10 @@ static inline CGPoint rwNormalize(CGPoint a) {
 
 - (void) killAnimal:(SKSpriteNode *) animal {
     SKAction *rabbitDie = [SKAction rotateByAngle:180 duration:.6];
+    SKAction *sound = [SKAction playSoundFileNamed:kSoundAnimalKil waitForCompletion:NO];
+
     SKAction *foo = [SKAction scaleBy:.40 duration:.6];
-    SKAction *group = [SKAction group:@[rabbitDie, foo]];
+    SKAction *group = [SKAction group:@[rabbitDie, foo, sound]];
     
     SKAction *remove = [SKAction removeFromParent];
     
@@ -394,6 +412,33 @@ static inline CGPoint rwNormalize(CGPoint a) {
    // self.worldMovedForUpdate = YES;
 }
  */
+
+- (void) startBackgroundMusic {
+    /*
+    NSError *error;
+    NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"CongoLoop" withExtension:@"m4a"];
+
+    self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
+    self.backgroundMusicPlayer.numberOfLoops = -1;
+    [self.backgroundMusicPlayer prepareToPlay];
+    [self.backgroundMusicPlayer play];
+    NSLog(@"music error: %@", error);
+     */
+    
+    NSError *err;
+    NSURL *file = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:kSoundBackgroundMusic ofType:nil]];
+    self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:file error:&err];
+    if (err) {
+        NSLog(@"error in audio play %@",[err userInfo]);
+        return;
+    }
+    [self.backgroundMusicPlayer prepareToPlay];
+    
+    // this will play the music infinitely
+    self.backgroundMusicPlayer.numberOfLoops = -1;
+    [self.backgroundMusicPlayer setVolume:kBackgroundVolume];
+    [self.backgroundMusicPlayer play];
+}
 
 #pragma mark Hero
 - (void) moveHeroToPoint:(CGPoint)targetPoint {
@@ -898,8 +943,11 @@ static inline CGPoint rwNormalize(CGPoint a) {
     SKAction *fireAction = [SKAction moveByX:cosf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                           y:sinf(rot)*kHeroProjectileSpeed*kHeroProjectileLifetime
                                     duration:kHeroProjectileLifetime];
+    
+    SKAction *sound = [SKAction playSoundFileNamed:@"handgun_500a.m4a" waitForCompletion:NO];
 
-    [projectile runAction:[SKAction sequence:@[fireAction,
+
+    [projectile runAction:[SKAction sequence:@[sound, fireAction,
                                                [
                                                 SKAction runBlock:^(void) {
                                                     NSString *burstPath = [[NSBundle mainBundle] pathForResource:@"SmokeParticle" ofType:@"sks"];
